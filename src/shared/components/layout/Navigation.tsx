@@ -2,13 +2,14 @@
 
 /**
  * Navigation Component
- * Desktop navigation menu
+ * Modern desktop navigation with smooth animations
  */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ROUTES } from '@/lib/constants';
 import { cn } from '@/shared/utils/cn';
+import { motion } from 'framer-motion';
 
 const navItems = [
   { label: 'Beranda', href: ROUTES.home },
@@ -22,7 +23,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center space-x-1">
+    <nav className="flex items-center gap-2">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
 
@@ -30,14 +31,44 @@ export function Navigation() {
           <Link
             key={item.href}
             href={item.href}
-            className={cn(
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              isActive
-                ? 'bg-primary-50 text-primary-700'
-                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-            )}
+            className="relative px-4 py-2 group"
           >
-            {item.label}
+            <span
+              className={cn(
+                'relative z-10 text-sm font-medium transition-colors duration-200',
+                isActive
+                  ? 'text-primary-700'
+                  : 'text-gray-700 group-hover:text-primary-600'
+              )}
+            >
+              {item.label}
+            </span>
+
+            {/* Active indicator */}
+            {isActive && (
+              <motion.div
+                layoutId="activeNav"
+                className="absolute inset-0 bg-primary-50 rounded-xl"
+                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              />
+            )}
+
+            {/* Hover background */}
+            <div
+              className={cn(
+                'absolute inset-0 bg-gray-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200',
+                isActive && 'opacity-0 group-hover:opacity-0'
+              )}
+            />
+
+            {/* Active dot indicator */}
+            {isActive && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-primary-600 rounded-full"
+              />
+            )}
           </Link>
         );
       })}

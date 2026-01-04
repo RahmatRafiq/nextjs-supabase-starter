@@ -44,13 +44,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        className={cn(
+          'fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300',
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        )}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -59,8 +60,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       <div
         className={cn(
           'fixed top-16 left-0 right-0 bottom-0 bg-white z-40 md:hidden',
-          'transform transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-y-0' : '-translate-y-full'
+          'transform transition-all duration-300 ease-in-out',
+          isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
         )}
       >
         <nav className="flex flex-col p-4 space-y-2">
