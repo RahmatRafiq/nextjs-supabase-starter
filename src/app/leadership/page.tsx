@@ -6,7 +6,7 @@ import { DIVISIONS } from '@/lib/constants';
 import { Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import type { LeadershipMember } from '@/core/entities/Leadership';
+import type { LeadershipListItem, Leadership } from '@/core/entities/Leadership';
 
 const positionLabels: Record<string, string> = {
   'ketua': 'Ketua',
@@ -18,8 +18,8 @@ const positionLabels: Record<string, string> = {
 };
 
 export default function LeadershipPage() {
-  const [coreLeadership, setCoreLeadership] = useState<LeadershipMember[]>([]);
-  const [groupedByDivision, setGroupedByDivision] = useState<Record<string, LeadershipMember[]>>({});
+  const [coreLeadership, setCoreLeadership] = useState<LeadershipListItem[]>([]);
+  const [groupedByDivision, setGroupedByDivision] = useState<Record<string, LeadershipListItem[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function LeadershipPage() {
           if (!acc[div]) acc[div] = [];
           acc[div].push(member);
           return acc;
-        }, {} as Record<string, LeadershipMember[]>);
+        }, {} as Record<string, LeadershipListItem[]>);
 
         setCoreLeadership(core);
         setGroupedByDivision(grouped);
@@ -93,14 +93,12 @@ export default function LeadershipPage() {
             >
               {/* Image - minimal frame */}
               <div className="relative aspect-[3/4] overflow-hidden rounded-3xl mb-6 bg-gradient-to-br from-primary-100/50 to-gray-100/50">
-                <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.5 }}>
-                  <Image
-                    src={member.photo}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                  />
-                </motion.div>
+                <Image
+                  src={member.photo}
+                  alt={member.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
               </div>
               {/* Info - clean typography */}
               <div className="text-center">

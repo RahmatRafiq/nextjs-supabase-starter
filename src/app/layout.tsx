@@ -6,6 +6,7 @@ import { Header } from '@/shared/components/layout/Header';
 import { Footer } from '@/shared/components/layout/Footer';
 import { WhatsAppButton } from '@/shared/components/ui/WhatsAppButton';
 import { Toaster } from 'sonner';
+import { PageTransition } from '@/shared/providers/PageTransition';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -79,13 +80,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className="scroll-smooth">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
       <body className={`${plusJakarta.variable} ${poppins.variable} font-sans antialiased`}>
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <PageTransition>
+          <main className="min-h-screen">{children}</main>
+        </PageTransition>
         <Footer />
         <WhatsAppButton />
         <Toaster position="top-right" richColors />

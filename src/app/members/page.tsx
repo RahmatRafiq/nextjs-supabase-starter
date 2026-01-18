@@ -5,14 +5,14 @@ import { User } from 'lucide-react';
 import { JsonMemberRepository } from '@/infrastructure/repositories/JsonMemberRepository';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import type { Member } from '@/core/entities/Member';
+import type { Member, MemberListItem } from '@/core/entities/Member';
 
 export default function MembersPage({
   searchParams,
 }: {
   searchParams: { batch?: string; division?: string };
 }) {
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<MemberListItem[]>([]);
   const [batches, setBatches] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { batch, division } = searchParams;
@@ -71,11 +71,10 @@ export default function MembersPage({
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1">
             <a
               href="/members"
-              className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${
-                !batch
-                  ? 'bg-gray-900 text-white shadow-lg scale-105'
-                  : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              }`}
+              className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${!batch
+                ? 'bg-gray-900 text-white shadow-lg scale-105'
+                : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
             >
               Semua Angkatan
             </a>
@@ -83,11 +82,10 @@ export default function MembersPage({
               <a
                 key={b}
                 href={`/members?batch=${b}`}
-                className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${
-                  batch === b
-                    ? 'bg-gray-900 text-white shadow-lg scale-105'
-                    : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }`}
+                className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${batch === b
+                  ? 'bg-gray-900 text-white shadow-lg scale-105'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
               >
                 Angkatan {b}
               </a>

@@ -1,6 +1,6 @@
 /**
  * FeaturesSection Component
- * Modern bento-style layout without cards
+ * Modern bento-style layout without cards - Optimized
  */
 
 'use client';
@@ -8,6 +8,7 @@
 import { Leaf, Users, GraduationCap, Heart, LucideIcon } from 'lucide-react';
 import homeData from '../../../../public/data/home.json';
 import { motion } from 'framer-motion';
+import { Section } from '@/shared/components/ui/Section';
 
 const iconMap: Record<string, LucideIcon> = {
   Leaf,
@@ -20,13 +21,13 @@ export function FeaturesSection() {
   const { features } = homeData;
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <Section className="overflow-hidden">
       {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-primary-50/30 to-white" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-primary-50/30 to-white pointer-events-none" />
 
-      {/* Organic blob shapes */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl" />
+      {/* Organic blob shapes - CSS Animation */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200/20 rounded-full blur-3xl animate-pulse-slow pointer-events-none" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl animate-float-delayed pointer-events-none" />
 
       <div className="container-custom relative z-10">
         {/* Header - Bold typography */}
@@ -34,18 +35,18 @@ export function FeaturesSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mb-20"
+          className="max-w-3xl mb-16 md:mb-24"
         >
-          <h2 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-[1.1] tracking-tight">
             {features.title}
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600">
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl leading-relaxed">
             {features.description}
           </p>
         </motion.div>
 
         {/* Bento Grid - Asymmetric layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {features.items.map((feature, index) => {
             const Icon = iconMap[feature.icon] || Leaf;
             const isLarge = index === 0 || index === 3;
@@ -53,37 +54,28 @@ export function FeaturesSection() {
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
                 transition={{
-                  delay: index * 0.15,
-                  duration: 0.6,
-                  ease: [0.21, 0.47, 0.32, 0.98],
-                }}
-                whileHover={{
-                  scale: 1.03,
-                  y: -8,
+                  delay: index * 0.1,
+                  duration: 0.5,
                 }}
                 className={`group relative ${isLarge ? 'lg:col-span-2' : ''}`}
               >
-                {/* Glassmorphism background - no borders */}
-                <div className="relative h-full p-8 md:p-10 rounded-3xl bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 hover:shadow-2xl">
+                {/* Glassmorphism background */}
+                <div className="relative h-full p-8 md:p-10 rounded-[2rem] bg-white border border-gray-100/50 shadow-sm hover:shadow-xl hover:border-primary-100 transition-all duration-300">
                   {/* Subtle gradient overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color.replace('bg-', 'from-').replace('text-', 'to-')}/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color.replace('bg-', 'from-').replace('text-', 'to-')}/5 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
                   <div className="relative z-10">
-                    {/* Icon - minimal, no heavy backgrounds */}
-                    <motion.div
-                      className="mb-6"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <Icon className={`w-12 h-12 ${feature.color.includes('text-') ? feature.color : 'text-primary-600'}`} />
-                    </motion.div>
+                    {/* Icon */}
+                    <div className="mb-6 w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:scale-110 group-hover:bg-white group-hover:shadow-md transition-all duration-300">
+                      <Icon className={`w-7 h-7 ${feature.color.includes('text-') ? feature.color : 'text-primary-600'}`} />
+                    </div>
 
-                    {/* Title - varying sizes for contrast */}
-                    <h3 className={`font-bold text-gray-900 mb-4 ${isLarge ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+                    {/* Title */}
+                    <h3 className={`font-bold text-gray-900 mb-3 ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
                       {feature.title}
                     </h3>
 
@@ -92,8 +84,12 @@ export function FeaturesSection() {
                       {feature.description}
                     </p>
 
-                    {/* Decorative element - subtle */}
-                    <div className="absolute top-8 right-8 w-2 h-2 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Decorative Arrow for large cards */}
+                    {isLarge && (
+                      <div className="mt-8 text-primary-600 font-medium opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                        Learn more &rarr;
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -101,6 +97,6 @@ export function FeaturesSection() {
           })}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
