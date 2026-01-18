@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import { JsonMemberRepository } from '@/infrastructure/repositories/JsonMemberRepository';
@@ -65,30 +65,30 @@ export default function MembersPage({
         </div>
       </section>
 
-      {/* Filters - Bold Tabs */}
-      <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="container-custom py-6">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1">
-            <a
+      {/* Filters - Segmented Control */}
+      <section className="sticky top-0 md:top-32 z-40 py-4 transition-all duration-300 pointer-events-none">
+        <div className="container-custom flex justify-center pointer-events-auto">
+          <div className="inline-flex items-center p-1.5 bg-gray-100/80 rounded-full border border-gray-200 shadow-inner overflow-x-auto max-w-full scrollbar-hide">
+            <Link
               href="/members"
-              className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${!batch
-                ? 'bg-gray-900 text-white shadow-lg scale-105'
-                : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${!batch
+                ? 'bg-white text-black shadow-sm ring-1 ring-black/5'
+                : 'text-gray-500 hover:text-gray-900'
                 }`}
             >
               Semua Angkatan
-            </a>
+            </Link>
             {batches.map((b) => (
-              <a
+              <Link
                 key={b}
                 href={`/members?batch=${b}`}
-                className={`px-8 py-4 font-bold whitespace-nowrap transition-all rounded-2xl flex-shrink-0 ${batch === b
-                  ? 'bg-gray-900 text-white shadow-lg scale-105'
-                  : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${batch === b
+                  ? 'bg-white text-black shadow-sm ring-1 ring-black/5'
+                  : 'text-gray-500 hover:text-gray-900'
                   }`}
               >
                 Angkatan {b}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
