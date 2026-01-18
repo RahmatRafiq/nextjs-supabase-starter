@@ -10,6 +10,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { ArrowRight, Leaf, Sparkles } from 'lucide-react';
 import homeData from '../../../../public/data/home.json';
 import { motion } from 'framer-motion';
+import { ParallaxHero } from '@/shared/components/ui/ParallaxHero';
 
 const container = {
   hidden: { opacity: 0 },
@@ -30,14 +31,39 @@ export function HeroSection() {
   const { hero } = homeData;
 
   return (
-    <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 md:py-28 overflow-hidden">
-      {/* Static background elements - optimized */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/30 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary-200/30 rounded-full blur-3xl" />
-      </div>
+    <ParallaxHero className="bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0],
+              y: [0, 30, 0],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/30 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.3, 1],
+              x: [0, -40, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary-200/30 rounded-full blur-3xl"
+          />
+        </div>
 
-      <div className="container-custom relative z-10">
+        <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <motion.div
@@ -46,8 +72,31 @@ export function HeroSection() {
             animate="show"
             className="space-y-6"
           >
-            <motion.div variants={item} className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm text-primary-700 px-5 py-2.5 rounded-full text-sm font-medium shadow-lg border border-primary-100 hover:shadow-xl hover:scale-105 transition-all cursor-default">
-              <Sparkles className="w-4 h-4" />
+            <motion.div
+              variants={item}
+              whileHover={{ scale: 1.05 }}
+              animate={{
+                boxShadow: [
+                  "0 10px 30px -15px rgba(79, 70, 229, 0.3)",
+                  "0 10px 40px -15px rgba(79, 70, 229, 0.5)",
+                  "0 10px 30px -15px rgba(79, 70, 229, 0.3)",
+                ],
+              }}
+              transition={{
+                boxShadow: {
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+              }}
+              className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm text-primary-700 px-5 py-2.5 rounded-full text-sm font-medium shadow-lg border border-primary-100 cursor-default"
+            >
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="w-4 h-4" />
+              </motion.div>
               <span>{hero.badge}</span>
             </motion.div>
 
@@ -103,27 +152,85 @@ export function HeroSection() {
           >
             <motion.div
               whileHover={{ scale: 1.02 }}
+              animate={{
+                y: [0, -10, 0],
+              }}
+              transition={{
+                y: {
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+              }}
               className="relative h-96 lg:h-[500px] bg-gradient-to-br from-primary-200 to-secondary-200 rounded-3xl overflow-hidden shadow-2xl"
             >
-              {/* Static gradient overlay - optimized */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-300/30 to-secondary-300/30" />
+              {/* Animated gradient overlay */}
+              <motion.div
+                animate={{
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 bg-gradient-to-br from-primary-300/30 to-secondary-300/30"
+              />
 
               {/* Placeholder content */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <Leaf className="w-24 h-24 mx-auto mb-4 opacity-50" />
+                <motion.div
+                  animate={{
+                    y: [0, -5, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="text-center text-white"
+                >
+                  <motion.div
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Leaf className="w-24 h-24 mx-auto mb-4 opacity-50" />
+                  </motion.div>
                   <p className="text-lg font-medium">Hero Image</p>
                   <p className="text-sm opacity-75">Tambahkan foto kebun di sini</p>
-                </div>
+                </motion.div>
               </div>
             </motion.div>
 
-            {/* Static floating elements - optimized */}
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary-400/40 rounded-full blur-3xl" />
-            <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary-400/40 rounded-full blur-3xl" />
+            {/* Animated floating elements */}
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.4, 0.6, 0.4],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary-400/40 rounded-full blur-3xl"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.4, 0.7, 0.4],
+              }}
+              transition={{
+                duration: 7,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -top-6 -right-6 w-32 h-32 bg-primary-400/40 rounded-full blur-3xl"
+            />
           </motion.div>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </ParallaxHero>
   );
 }

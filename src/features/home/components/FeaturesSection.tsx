@@ -53,22 +53,34 @@ export function FeaturesSection() {
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  delay: index * 0.15,
+                  duration: 0.6,
+                  ease: [0.21, 0.47, 0.32, 0.98],
+                }}
+                whileHover={{
+                  scale: 1.03,
+                  y: -8,
+                }}
                 className={`group relative ${isLarge ? 'lg:col-span-2' : ''}`}
               >
                 {/* Glassmorphism background - no borders */}
-                <div className="relative h-full p-8 md:p-10 rounded-3xl bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-all duration-500">
+                <div className="relative h-full p-8 md:p-10 rounded-3xl bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 hover:shadow-2xl">
                   {/* Subtle gradient overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${feature.color.replace('bg-', 'from-').replace('text-', 'to-')}/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
                   <div className="relative z-10">
                     {/* Icon - minimal, no heavy backgrounds */}
-                    <div className="mb-6">
-                      <Icon className={`w-12 h-12 ${feature.color.includes('text-') ? feature.color : 'text-primary-600'}`} strokeWidth={1.5} />
-                    </div>
+                    <motion.div
+                      className="mb-6"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <Icon className={`w-12 h-12 ${feature.color.includes('text-') ? feature.color : 'text-primary-600'}`} />
+                    </motion.div>
 
                     {/* Title - varying sizes for contrast */}
                     <h3 className={`font-bold text-gray-900 mb-4 ${isLarge ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
