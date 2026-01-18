@@ -7,7 +7,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/shared/components/ui/Button';
-import { ArrowRight, Leaf, Sparkles } from 'lucide-react';
+import { ArrowRight, Leaf, Sparkles, Activity } from 'lucide-react';
 import homeData from '../../../../public/data/home.json';
 import { motion } from 'framer-motion';
 import { ParallaxHero } from '@/shared/components/ui/ParallaxHero';
@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { CountingNumber } from '@/shared/components/ui/CountingNumber';
 import { TiltCard } from '@/shared/components/ui/TiltCard';
 
-// Simplified animation variants - Reduced complexity
 // Simplified animation variants - Reduced complexity
 const container = {
   hidden: { opacity: 0 },
@@ -139,10 +138,10 @@ export function HeroSection() {
                   <div className="absolute inset-0 flex items-center justify-center text-white/90">
                     <div className="text-center p-8">
                       <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-2xl mx-auto mb-6 flex items-center justify-center animate-float">
-                        <Leaf className="w-12 h-12 text-white" />
+                        <Activity className="w-12 h-12 text-white" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-2">Griya Flora</h3>
-                      <p className="text-primary-100">Pusat Agrowisata Babulu</p>
+                      <h3 className="text-2xl font-bold mb-2">HMJF UIN</h3>
+                      <p className="text-primary-100">Farmasi Alauddin</p>
                     </div>
                   </div>
                 </div>
@@ -151,12 +150,12 @@ export function HeroSection() {
               {/* Floating Cards */}
               <div className="absolute -bottom-10 -left-12 bg-white p-4 rounded-xl shadow-xl animate-float-delayed z-20 max-w-[200px]">
                 <div className="flex items-center space-x-3 mb-2">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800 text-sm">Review 4.9/5</p>
-                    <p className="text-xs text-gray-500">Dari Pengunjung</p>
+                    <p className="font-bold text-gray-800 text-sm">Program Unggulan</p>
+                    <p className="text-xs text-gray-500">Pengembangan Softskill</p>
                   </div>
                 </div>
               </div>
@@ -167,7 +166,7 @@ export function HeroSection() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                   </span>
-                  <p className="font-bold text-gray-800 text-sm">Buka Setiap Hari</p>
+                  <p className="font-bold text-gray-800 text-sm">Aktif Selalu</p>
                 </div>
               </div>
             </div>

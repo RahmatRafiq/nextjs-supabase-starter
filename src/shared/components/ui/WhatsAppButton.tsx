@@ -15,7 +15,7 @@ export function WhatsAppButton() {
 
   const handleClick = () => {
     const message = encodeURIComponent(
-      `Halo ${SITE_CONFIG.name}, saya ingin bertanya tentang agrowisata.`
+      `Halo ${SITE_CONFIG.name}, saya ingin bertanya tentang program HMJF.`
     );
     window.open(
       `https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${message}`,
@@ -41,7 +41,7 @@ export function WhatsAppButton() {
               <div className="flex-1">
                 <h4 className="font-semibold text-gray-900 mb-1">Ada pertanyaan?</h4>
                 <p className="text-sm text-gray-600">
-                  Chat dengan kami untuk info lebih lanjut tentang agrowisata!
+                  Chat dengan kami untuk info lebih lanjut tentang HMJF!
                 </p>
               </div>
               <button
