@@ -4,7 +4,6 @@ import './globals.css';
 import { SITE_CONFIG } from '@/lib/constants';
 import { FloatingDock } from '@/shared/components/layout/FloatingDock';
 import { Footer } from '@/shared/components/layout/Footer';
-import { WhatsAppButton } from '@/shared/components/ui/WhatsAppButton';
 import { Toaster } from 'sonner';
 import { PageTransition } from '@/shared/providers/PageTransition';
 
@@ -86,7 +85,6 @@ export default function RootLayout({
         </PageTransition>
         <FloatingDock />
         <Footer />
-        <WhatsAppButton />
         <Toaster position="top-right" richColors />
       </body>
     </html>
