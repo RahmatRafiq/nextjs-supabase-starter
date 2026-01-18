@@ -1,9 +1,9 @@
 {
   "hero": {
-    "badge": "Wadah Mahasiswa Farmasi UIN Alauddin",
-    "title": "Bersama Membangun",
-    "titleHighlight": "Farmasis Profesional",
-    "description": "Kami adalah wadah pengembangan mahasiswa Farmasi UIN Alauddin Makassar yang berfokus pada potensi akademik, kepemimpinan, dan pengabdian untuk mencetak farmasis berintegritas.",
+    "badge": "Official Website HMJF UIN Alauddin Makassar",
+    "title": "Himpunan Mahasiswa",
+    "titleHighlight": "Jurusan Farmasi",
+    "description": "HMJF UIN Alauddin Makassar siap mencetak farmasis unggul, berintegritas, dan berwawasan luas. Kami hadir sebagai pusat pengembangan potensi mahasiswa farmasi yang progresif dan berdaya saing.",
     "primaryCTA": {
       "text": "Lihat Event Kami",
       "link": "/events"
@@ -58,8 +58,8 @@
     ]
   },
   "cta": {
-    "title": "Bergabunglah Bersama Kami",
-    "description": "Jadilah bagian dari perjalanan kami dalam membangun farmasis profesional yang berakhlak mulia.",
+    "title": "Kenali Lebih Dekat",
+    "description": "Mari bersinergi dalam membangun farmasis profesional yang berakhlak mulia melalui pengembangan akademik dan pengabdian.",
     "primaryCTA": {
       "text": "Lihat Kepengurusan",
       "link": "/leadership"
