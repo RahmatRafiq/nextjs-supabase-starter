@@ -33,38 +33,50 @@ export default async function LeadershipPage() {
   }, {} as Record<string, typeof divisionLeadership>);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
-        <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Kepengurusan</h1>
-          <p className="text-xl text-primary-100 max-w-2xl">
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Bold & Minimal */}
+      <section className="relative bg-gray-900 text-white py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/50 to-gray-900" />
+        <div className="container-custom relative z-10">
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+            Kepengurusan
+          </h1>
+          <p className="text-2xl text-gray-300 max-w-3xl leading-relaxed">
             Struktur kepengurusan HMJF UIN Alauddin periode 2025-2026
           </p>
         </div>
       </section>
 
-      {/* Core Leadership */}
-      <section className="container-custom py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Pengurus Inti</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+      {/* Core Leadership - Modern Grid */}
+      <section className="container-custom py-24">
+        <div className="max-w-5xl mb-16">
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Pengurus <span className="text-primary-600">Inti</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {coreLeadership.map((member) => (
-            <div key={member.id} className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all group">
-              <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary-100 to-primary-50">
+            <div key={member.id} className="group">
+              {/* Image - minimal frame */}
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl mb-6 bg-gradient-to-br from-primary-100/50 to-gray-100/50">
                 <Image
                   src={member.photo}
                   alt={member.name}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
-              <div className="p-6 text-center">
-                <h3 className="font-bold text-xl text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-primary-600 font-medium mb-3">{positionLabels[member.position]}</p>
+              {/* Info - clean typography */}
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{member.name}</h3>
+                <p className="text-primary-600 font-bold mb-4">{positionLabels[member.position]}</p>
                 {member.email && (
-                  <a href={`mailto:${member.email}`} className="text-sm text-gray-600 hover:text-primary-600 flex items-center justify-center gap-1">
+                  <a
+                    href={`mailto:${member.email}`}
+                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                  >
                     <Mail className="w-4 h-4" />
-                    {member.email}
+                    <span className="line-clamp-1">{member.email}</span>
                   </a>
                 )}
               </div>
@@ -73,30 +85,51 @@ export default async function LeadershipPage() {
         </div>
       </section>
 
-      {/* Division Leadership */}
-      <section className="bg-white py-16">
+      {/* Division Leadership - Bento Style */}
+      <section className="relative py-24 overflow-hidden bg-gray-50">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">Koordinator Divisi</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="max-w-5xl mb-16">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Koordinator <span className="text-primary-600">Divisi</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Object.entries(groupedByDivision).map(([division, members]) => (
-              <div key={division}>
-                <h3 className="font-bold text-lg text-primary-700 mb-4">{DIVISIONS[division as keyof typeof DIVISIONS]}</h3>
-                <div className="space-y-4">
+              <div key={division} className="relative">
+                {/* Division header - bold */}
+                <div className="mb-6">
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    {DIVISIONS[division as keyof typeof DIVISIONS]}
+                  </h3>
+                  <div className="w-16 h-1 bg-primary-600 rounded-full" />
+                </div>
+                {/* Members - minimal layout */}
+                <div className="space-y-6">
                   {members.map((member) => (
-                    <div key={member.id} className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={member.photo}
-                          alt={member.name}
-                          width={56}
-                          height={56}
-                          className="rounded-full object-cover"
-                        />
+                    <div key={member.id} className="relative group">
+                      <div className="flex items-center gap-4">
+                        {/* Avatar - larger, cleaner */}
+                        <div className="relative w-20 h-20 flex-shrink-0">
+                          <Image
+                            src={member.photo}
+                            alt={member.name}
+                            fill
+                            className="rounded-2xl object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{member.name}</p>
-                          <p className="text-sm text-gray-600">{positionLabels[member.position]}</p>
+                          <p className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
+                            {member.name}
+                          </p>
+                          <p className="text-sm text-primary-600 font-semibold mb-2">
+                            {positionLabels[member.position]}
+                          </p>
                           {member.email && (
-                            <a href={`mailto:${member.email}`} className="text-xs text-primary-600 hover:underline truncate block">
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="text-xs text-gray-600 hover:text-primary-600 transition-colors line-clamp-1 block"
+                            >
                               {member.email}
                             </a>
                           )}

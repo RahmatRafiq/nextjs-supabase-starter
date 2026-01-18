@@ -39,26 +39,29 @@ export default async function EventsPage({
     : await eventRepo.getAll();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
-        <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Event & Kegiatan</h1>
-          <p className="text-xl text-primary-100 max-w-2xl">
-            Ikuti berbagai kegiatan dan event menarik dari HMJF UIN Alauddin
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Bold & Minimal */}
+      <section className="relative bg-gray-900 text-white py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/50 to-gray-900" />
+        <div className="container-custom relative z-10">
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+            Event
+          </h1>
+          <p className="text-2xl text-gray-300 max-w-3xl leading-relaxed">
+            Kegiatan dan acara terkini dari HMJF UIN Alauddin Makassar
           </p>
         </div>
       </section>
 
-      {/* Status Filter */}
-      <section className="bg-white border-b sticky top-16 z-30">
-        <div className="container-custom py-4">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      {/* Status Filter - Floating Pills */}
+      <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="container-custom py-6">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <Link
               href="/events"
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+              className={`px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-all ${
                 !status
-                  ? 'bg-primary-600 text-white'
+                  ? 'bg-gray-900 text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -66,9 +69,9 @@ export default async function EventsPage({
             </Link>
             <Link
               href="/events?status=upcoming"
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+              className={`px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-all ${
                 status === 'upcoming'
-                  ? 'bg-primary-600 text-white'
+                  ? 'bg-gray-900 text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -76,9 +79,9 @@ export default async function EventsPage({
             </Link>
             <Link
               href="/events?status=completed"
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+              className={`px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-all ${
                 status === 'completed'
-                  ? 'bg-primary-600 text-white'
+                  ? 'bg-gray-900 text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -88,92 +91,86 @@ export default async function EventsPage({
         </div>
       </section>
 
-      {/* Events List */}
-      <section className="container-custom py-12">
+      {/* Events Grid - Modern Layout */}
+      <section className="container-custom py-16">
         {events.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">Belum ada event tersedia</p>
+          <div className="text-center py-32">
+            <p className="text-gray-500 text-xl">Belum ada event tersedia</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((event) => (
-              <article
+              <Link
                 key={event.id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col md:flex-row"
+                href={`/events/${event.slug}`}
+                className="group relative"
               >
-                {/* Cover Image */}
-                <Link
-                  href={`/events/${event.slug}`}
-                  className="block relative w-full md:w-64 h-64 md:h-auto flex-shrink-0 overflow-hidden"
-                >
-                  <Image
-                    src={event.coverImage}
-                    alt={event.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <span className={`px-3 py-1 ${statusColors[event.status]} text-xs font-medium rounded-full`}>
-                      {statusLabels[event.status]}
-                    </span>
-                    {event.featured && (
-                      <span className="px-3 py-1 bg-secondary-600 text-white text-xs font-medium rounded-full">
-                        Featured
+                {/* Glassmorphism container */}
+                <div className="relative overflow-hidden rounded-3xl bg-white/40 backdrop-blur-sm hover:bg-white/60 transition-all duration-500">
+                  {/* Image section */}
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <Image
+                      src={event.coverImage}
+                      alt={event.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+
+                    {/* Badges */}
+                    <div className="absolute top-6 right-6 flex flex-col gap-2">
+                      <span className={`px-4 py-2 ${statusColors[event.status]} text-sm font-bold rounded-full shadow-lg`}>
+                        {statusLabels[event.status]}
                       </span>
-                    )}
-                  </div>
-                </Link>
+                      {event.featured && (
+                        <span className="px-4 py-2 bg-secondary-500 text-white text-sm font-bold rounded-full shadow-lg">
+                          Featured
+                        </span>
+                      )}
+                    </div>
 
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col">
-                  {/* Category */}
-                  <div className="text-xs text-primary-600 font-medium mb-2">
-                    {EVENT_CATEGORIES[event.category]}
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/50 to-transparent" />
                   </div>
 
-                  {/* Title */}
-                  <Link href={`/events/${event.slug}`}>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                  {/* Content - overlapping image */}
+                  <div className="relative -mt-20 p-8">
+                    {/* Date badge - prominent */}
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-900 text-white rounded-2xl mb-6 shadow-xl">
+                      <Calendar className="w-5 h-5" />
+                      <time className="font-bold">
+                        {format(new Date(event.startDate), 'd MMM yyyy', { locale: id })}
+                      </time>
+                    </div>
+
+                    {/* Category */}
+                    <div className="text-sm text-primary-600 font-bold mb-3">
+                      {EVENT_CATEGORIES[event.category]}
+                    </div>
+
+                    {/* Title - large and bold */}
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors">
                       {event.title}
                     </h2>
-                  </Link>
 
-                  {/* Description */}
-                  <p className="text-gray-600 mb-4 line-clamp-2 flex-1">
-                    {event.description}
-                  </p>
+                    {/* Description */}
+                    <p className="text-gray-600 mb-6 line-clamp-2 text-base leading-relaxed">
+                      {event.description}
+                    </p>
 
-                  {/* Event Info */}
-                  <div className="space-y-2 text-sm text-gray-600 mb-4">
-                    <div className="flex items-start gap-2">
-                      <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium">
-                          {format(new Date(event.startDate), 'd MMMM yyyy', { locale: id })}
-                        </p>
-                        {event.startDate !== event.endDate && (
-                          <p className="text-xs text-gray-500">
-                            s/d {format(new Date(event.endDate), 'd MMMM yyyy', { locale: id })}
-                          </p>
-                        )}
-                      </div>
+                    {/* Location */}
+                    <div className="flex items-center gap-2 text-gray-700 mb-4">
+                      <MapPin className="w-5 h-5 text-primary-600" />
+                      <span className="font-medium line-clamp-1">{event.location.name}</span>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span className="line-clamp-1">{event.location.name}</span>
+
+                    {/* Read more indicator */}
+                    <div className="flex items-center gap-2 text-gray-900 font-semibold group-hover:gap-3 transition-all">
+                      Lihat Detail
+                      <ArrowRight className="w-5 h-5" />
                     </div>
                   </div>
-
-                  {/* Action Button */}
-                  <Link
-                    href={`/events/${event.slug}`}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
-                  >
-                    Lihat Detail
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

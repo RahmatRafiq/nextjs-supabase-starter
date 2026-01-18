@@ -34,72 +34,99 @@ export function EventsPreview() {
   }
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container-custom">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Event Mendatang</h2>
-            <p className="text-gray-600">Jangan lewatkan kegiatan seru dari HMJF</p>
+    <section className="relative py-32 overflow-hidden bg-white">
+      {/* Background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-50/30 via-transparent to-secondary-50/30" />
+
+      <div className="container-custom relative z-10">
+        {/* Header - Large bold text */}
+        <div className="max-w-4xl mb-16">
+          <h2 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Event <br />
+            <span className="text-primary-600">Mendatang</span>
+          </h2>
+          <div className="flex items-center justify-between">
+            <p className="text-xl text-gray-600">Jangan lewatkan kegiatan seru dari HMJF</p>
+            <Link
+              href="/events"
+              className="hidden md:inline-flex items-center gap-2 text-gray-900 font-semibold hover:gap-3 transition-all"
+            >
+              Lihat Semua
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
-          <Link
-            href="/events"
-            className="hidden md:inline-flex items-center gap-2 text-primary-600 font-medium hover:gap-3 transition-all"
-          >
-            Lihat Semua
-            <ArrowRight className="w-5 h-5" />
-          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {events.length === 0 ? (
-            <div className="col-span-3 text-center py-12 text-gray-500">
-              Belum ada event mendatang
-            </div>
-          ) : (
-            events.map((event) => (
+        {events.length === 0 ? (
+          <div className="text-center py-24 text-gray-500 text-xl">
+            Belum ada event mendatang
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {events.map((event, index) => (
               <Link
                 key={event.id}
                 href={`/events/${event.slug}`}
-                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all"
+                className="group relative"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={event.coverImage}
-                    alt={event.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  {event.featured && (
-                    <div className="absolute top-4 right-4">
-                      <span className="px-3 py-1 bg-secondary-600 text-white text-xs font-medium rounded-full">
-                        Featured
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-sm text-primary-600 font-medium mb-2">
-                    <Calendar className="w-4 h-4" />
-                    <time>{format(new Date(event.startDate), 'd MMMM yyyy', { locale: id })}</time>
+                {/* Glassmorphism container */}
+                <div className="relative overflow-hidden rounded-3xl bg-white/40 backdrop-blur-sm hover:bg-white/60 transition-all duration-500">
+                  {/* Image section */}
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <Image
+                      src={event.coverImage}
+                      alt={event.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    {event.featured && (
+                      <div className="absolute top-6 right-6">
+                        <span className="px-4 py-2 bg-secondary-500 text-white text-sm font-bold rounded-full shadow-lg">
+                          Featured
+                        </span>
+                      </div>
+                    )}
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/50 to-transparent" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <MapPin className="w-4 h-4" />
-                    <span className="line-clamp-1">{event.location.name}</span>
+
+                  {/* Content - overlapping image */}
+                  <div className="relative -mt-20 p-8">
+                    {/* Date badge - prominent */}
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-900 text-white rounded-2xl mb-6 shadow-xl">
+                      <Calendar className="w-5 h-5" />
+                      <time className="font-bold">
+                        {format(new Date(event.startDate), 'd MMMM yyyy', { locale: id })}
+                      </time>
+                    </div>
+
+                    {/* Title - large and bold */}
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                      {event.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-gray-600 mb-6 line-clamp-2 text-lg leading-relaxed">
+                      {event.description}
+                    </p>
+
+                    {/* Location */}
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <MapPin className="w-5 h-5 text-primary-600" />
+                      <span className="font-medium line-clamp-1">{event.location.name}</span>
+                    </div>
                   </div>
                 </div>
               </Link>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
-        <div className="text-center mt-8 md:hidden">
+        {/* Mobile CTA */}
+        <div className="text-center mt-12 md:hidden">
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white font-medium rounded-full hover:bg-primary-600 transition-colors"
           >
             Lihat Semua Event
             <ArrowRight className="w-5 h-5" />

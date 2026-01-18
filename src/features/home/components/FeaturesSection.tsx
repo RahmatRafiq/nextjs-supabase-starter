@@ -1,6 +1,6 @@
 /**
  * FeaturesSection Component
- * Highlight key features
+ * Modern bento-style layout without cards
  */
 
 'use client';
@@ -16,82 +16,78 @@ const iconMap: Record<string, LucideIcon> = {
   Heart,
 };
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0 },
-};
-
 export function FeaturesSection() {
   const { features } = homeData;
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
-      <div className="container-custom">
+    <section className="relative py-32 overflow-hidden">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-primary-50/30 to-white" />
+
+      {/* Organic blob shapes */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl" />
+
+      <div className="container-custom relative z-10">
+        {/* Header - Bold typography */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="max-w-3xl mb-20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             {features.title}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600">
             {features.description}
           </p>
         </motion.div>
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
+        {/* Bento Grid - Asymmetric layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.items.map((feature, index) => {
             const Icon = iconMap[feature.icon] || Leaf;
+            const isLarge = index === 0 || index === 3;
+
             return (
               <motion.div
                 key={index}
-                variants={item}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={`group relative ${isLarge ? 'lg:col-span-2' : ''}`}
               >
-                {/* Gradient background on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Glassmorphism background - no borders */}
+                <div className="relative h-full p-8 md:p-10 rounded-3xl bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-all duration-500">
+                  {/* Subtle gradient overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color.replace('bg-', 'from-').replace('text-', 'to-')}/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                {/* Card content */}
-                <div className="relative text-center p-8 rounded-2xl border-2 border-gray-100 bg-white hover:border-primary-200 transition-all duration-300 shadow-sm hover:shadow-xl">
-                  <motion.div
-                    whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
-                    className={`inline-flex p-5 rounded-2xl ${feature.color} mb-6 shadow-lg`}
-                  >
-                    <Icon className="w-8 h-8" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  <div className="relative z-10">
+                    {/* Icon - minimal, no heavy backgrounds */}
+                    <div className="mb-6">
+                      <Icon className={`w-12 h-12 ${feature.color.includes('text-') ? feature.color : 'text-primary-600'}`} strokeWidth={1.5} />
+                    </div>
 
-                  {/* Decorative element */}
-                  <div className="absolute top-4 right-4 w-8 h-8 bg-primary-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {/* Title - varying sizes for contrast */}
+                    <h3 className={`font-bold text-gray-900 mb-4 ${isLarge ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+                      {feature.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className={`text-gray-600 leading-relaxed ${isLarge ? 'text-lg' : 'text-base'}`}>
+                      {feature.description}
+                    </p>
+
+                    {/* Decorative element - subtle */}
+                    <div className="absolute top-8 right-8 w-2 h-2 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
                 </div>
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -60,7 +60,7 @@ export function Header() {
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
-                <span className="text-xs text-gray-500 font-medium">Agrotourism</span>
+                <span className="text-xs text-gray-500 font-medium">UIN Alauddin</span>
               </div>
             </div>
           </Link>

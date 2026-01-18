@@ -96,35 +96,26 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function StatsSection() {
   return (
-    <section className="relative py-24 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-      {/* Static background elements - no animation to save memory */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl" />
-      </div>
+    <section className="relative py-40 overflow-hidden bg-gray-900">
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-900/50 via-gray-900 to-gray-900" />
+      <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-primary-600/10 to-transparent" />
 
       <div className="container-custom relative z-10">
-        {/* Section Header */}
+        {/* Simple centered header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-700 rounded-full mb-4">
-            <Award className="w-4 h-4" />
-            <span className="text-sm font-semibold">Pencapaian Kami</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-heading">
-            Dipercaya oleh Ribuan Pengunjung
+          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            HMJF dalam <span className="text-primary-400">Angka</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Bergabunglah dengan ribuan keluarga yang telah merasakan pengalaman agrowisata organik terbaik
-          </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Minimal stats - no cards, just numbers */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -134,67 +125,38 @@ export function StatsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative"
+                className="text-center"
               >
-                <div className="relative h-full p-8 bg-white rounded-3xl shadow-xl border-2 border-transparent hover:border-primary-200 transition-all duration-300 overflow-hidden">
-                  {/* Gradient background on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                {/* Icon - minimal */}
+                <Icon className="w-8 h-8 md:w-10 md:h-10 text-primary-400 mx-auto mb-6" />
 
-                  {/* Icon */}
-                  <motion.div
-                    whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
-                    className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 shadow-lg`}
-                  >
-                    <Icon className="w-8 h-8 text-white" />
-                  </motion.div>
-
-                  {/* Counter */}
-                  <div className={`bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-3`}>
-                    <Counter value={stat.value} suffix={stat.suffix} />
-                  </div>
-
-                  {/* Label */}
-                  <p className="text-gray-600 font-medium leading-relaxed">
-                    {stat.label}
-                  </p>
-
-                  {/* Decorative corner */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary-50 to-transparent rounded-bl-full opacity-50" />
+                {/* Big number - focus on data */}
+                <div className="text-white mb-4">
+                  <Counter value={stat.value} suffix={stat.suffix} />
                 </div>
+
+                {/* Label */}
+                <p className="text-gray-400 font-medium text-sm md:text-base">
+                  {stat.label}
+                </p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Bottom decoration */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="mt-16 text-center"
-        >
-          <div className="inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-primary-50 via-secondary-50 to-primary-50 rounded-full border-2 border-primary-100">
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 border-2 border-white flex items-center justify-center text-white font-bold text-sm"
-                >
-                  {i}
-                </div>
-              ))}
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-semibold text-gray-900">
-                Rating 4.8/5.0
-              </p>
-              <p className="text-xs text-gray-600">dari 500+ review</p>
-            </div>
-          </div>
-        </motion.div>
+        {/* Optional divider */}
+        <div className="mt-24 pt-16 border-t border-gray-800">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Organisasi mahasiswa farmasi yang aktif mengembangkan akademik, soft skills, dan pengabdian masyarakat
+            </p>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

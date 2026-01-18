@@ -2,14 +2,16 @@
 
 /**
  * MobileMenu Component
- * Slide-out mobile navigation
+ * Modern off-canvas mobile navigation (slides from right)
  */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, SITE_CONFIG } from '@/lib/constants';
 import { cn } from '@/shared/utils/cn';
 import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Home, Info, FileText, Calendar, Users, UserCircle, X } from 'lucide-react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -17,12 +19,12 @@ interface MobileMenuProps {
 }
 
 const navItems = [
-  { label: 'Beranda', href: ROUTES.home },
-  { label: 'Tentang', href: ROUTES.about },
-  { label: 'Artikel', href: ROUTES.articles },
-  { label: 'Event', href: ROUTES.events },
-  { label: 'Kepengurusan', href: ROUTES.leadership },
-  { label: 'Anggota', href: ROUTES.members },
+  { label: 'Beranda', href: ROUTES.home, icon: Home },
+  { label: 'Tentang', href: ROUTES.about, icon: Info },
+  { label: 'Artikel', href: ROUTES.articles, icon: FileText },
+  { label: 'Event', href: ROUTES.events, icon: Calendar },
+  { label: 'Kepengurusan', href: ROUTES.leadership, icon: Users },
+  { label: 'Anggota', href: ROUTES.members, icon: UserCircle },
 ];
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
@@ -46,46 +48,90 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   }, [isOpen]);
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className={cn(
-          'fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300',
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        )}
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop with blur */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-      {/* Menu Panel */}
-      <div
-        className={cn(
-          'fixed top-16 left-0 right-0 bottom-0 bg-white z-40 md:hidden',
-          'transform transition-all duration-300 ease-in-out',
-          isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-        )}
-      >
-        <nav className="flex flex-col p-4 space-y-2">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'px-4 py-3 rounded-lg text-base font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                )}
+          {/* Off-canvas Menu Panel - Slides from right */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 md:hidden shadow-2xl"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h2 className="font-bold text-lg text-gray-900">{SITE_CONFIG.name}</h2>
+                <p className="text-xs text-gray-500 mt-0.5">UIN Alauddin Makassar</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Close menu"
               >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-    </>
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex flex-col p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-88px)]">
+              {navItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-medium transition-all',
+                        isActive
+                          ? 'bg-gradient-to-r from-primary-50 to-primary-100/50 text-primary-700 shadow-sm'
+                          : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'
+                      )}
+                    >
+                      <Icon className={cn('w-5 h-5', isActive ? 'text-primary-600' : 'text-gray-400')} />
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeMobile"
+                          className="ml-auto w-1.5 h-1.5 bg-primary-600 rounded-full"
+                        />
+                      )}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </nav>
+
+            {/* Footer Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-100 bg-gray-50">
+              <p className="text-xs text-gray-500 text-center leading-relaxed">
+                Himpunan Mahasiswa Jurusan Farmasi
+                <br />
+                UIN Alauddin Makassar
+              </p>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

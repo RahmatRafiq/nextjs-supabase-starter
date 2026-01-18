@@ -11,6 +11,9 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
+  fallback: ['system-ui', '-apple-system', 'sans-serif'],
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const poppins = Poppins({
@@ -18,6 +21,9 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
   variable: '--font-heading',
   display: 'swap',
+  fallback: ['system-ui', '-apple-system', 'sans-serif'],
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -28,15 +34,15 @@ export const metadata: Metadata = {
   },
   description: SITE_CONFIG.description,
   keywords: [
-    'agrowisata',
-    'agrotourism',
-    'pertanian organik',
-    'organic farm',
-    'buah segar',
-    'sayuran organik',
-    'bunga',
-    'wisata edukasi',
-    'kelompok tani',
+    'HMJF',
+    'himpunan mahasiswa farmasi',
+    'farmasi UIN Alauddin',
+    'mahasiswa farmasi Makassar',
+    'organisasi mahasiswa farmasi',
+    'jurusan farmasi',
+    'UIN Alauddin Makassar',
+    'farmasi',
+    'kesehatan',
   ],
   authors: [{ name: SITE_CONFIG.name }],
   creator: SITE_CONFIG.name,
@@ -73,6 +79,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className={`${plusJakarta.variable} ${poppins.variable} font-sans antialiased`}>
         <Header />
         <main className="min-h-screen">{children}</main>
