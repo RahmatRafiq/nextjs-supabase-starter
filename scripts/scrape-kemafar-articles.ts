@@ -269,7 +269,8 @@ function generateSQLInserts(articles: Article[]): string {
     sql += `  '${authorJson}'::jsonb,\n`;
     sql += `  ${tagsArray},\n`;
     sql += `  ${index < 3 ? 'true' : 'false'}\n`;
-    sql += `);\n\n`;
+    sql += `)\n`;
+    sql += `ON CONFLICT (slug) DO NOTHING;\n\n`;
   });
 
   return sql;

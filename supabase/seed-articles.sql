@@ -36,7 +36,8 @@ Beliau juga menegaskan bahwa “Aksi ini sebetulnya simpang siur, kita tidak men
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 2: NILAI ATAU TRANSAKSIONAL
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -80,7 +81,8 @@ Penulis : Anonim
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 3: HMJ Farmasi UINAM Goes To PRAMUNAS XX!
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -118,7 +120,8 @@ Selain untuk merumuskan strategi pengembangan organisasi ISMAFARSI selama satu p
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   true
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 4: PHARMACY EVENT 2022
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -204,7 +207,8 @@ Ketua HMJ Farmasi mengatakan bahwa tentunya kesuksesan kegiatan ini tidak terlep
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 5: PENYERANGAN DI FKIK (BANYAK HOAX YANG BEREDAR): PIMPINAN KAMPUS DIHARAPKAN UNTUK BERSIKAP TEGAS
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -240,7 +244,8 @@ Selaku ketua HMJ Farmasi, Juniar berharap pimpinan segera menyikapi dengan teg
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 6: DOSEN DAN MAHASISWA FARMASI LUKA AKIBAT PENYERANGAN DI FKIK
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -276,7 +281,8 @@ Dekan Fakultas Kedokteran dan Ilmu Kesehatan UIN Alauddin Makassar akhirnya meng
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 7: PENGEROYOKAN DI FKIK : KETUA HMJ FARMASI UINAM TELAH MELAPORKAN KEPIHAK BERWAJIB
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -314,7 +320,8 @@ Penulis : Mc
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 8: PEMALAKAN DI FKIK : AWAL MULA PENGEROYOKAN DAN SEBABKAN 1 ORANG MAHASISWA FARMASI UINAM LUKA-LUKA
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -354,7 +361,8 @@ Tindakan oleh oknum mahasiswa ini adalah tindakan yang tidak terpuji dan meceder
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 9: ALPHA-C Season 3 Sukses Besar
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -428,7 +436,8 @@ Ketua HMJ Farmasi mengatakan bahwa tentunya kesuksesan kegiatan ini tidak terlep
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 10: HMJ Farmasi UIN Alauddin Makassar Gelar Pengabdian Masyarakat
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -474,7 +483,8 @@ Kegiatan ini diharapkan dapat terus berlanjut dan memberikan manfaat kepada masy
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 11: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -514,7 +524,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 12: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -554,7 +565,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 13: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -594,7 +606,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 14: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -632,7 +645,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 15: ALPHA-C tahun ini hadir dengan berbagai event lomba, Dapatkan Hadiah jutaan rupiah
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -680,7 +694,8 @@ Cek this out
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 16: Ketua HMJ Farmasi 2022 Tanggapi RKUHP membatasi  kebebasan berpendapat semua elemen bisa terjerat
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -726,7 +741,8 @@ Hal inilah yang kemudian harus kita tolak secara tegas khususnya sebagai mahasis
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 17: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -766,7 +782,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 18: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -806,7 +823,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 19: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -846,7 +864,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 20: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -884,7 +903,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 21: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -924,7 +944,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 22: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -964,7 +985,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 23: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1004,7 +1026,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 24: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1042,7 +1065,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 25: Pharmacy Event 2025 Tutup Rangkaian Kegiatan dengan Malam Puncak yang Meriah di Khas Hotel Makassar
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1078,7 +1102,8 @@ Malam puncak juga dirangkaikan dengan penyerahan hadiah yang didukung dari para 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 26: Prestasi Tak Terbatas: Pengurus HMJ Farmasi 2025 Bersinar di Kompetisi Nasional
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1112,7 +1137,8 @@ HMJ Farmasi mengucapkan terima kasih yang sebesar-besarnya kepada seluruh pihak 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 27: “Empowering Future Leaders: HMJ Farmasi UIN Alauddin Makassar Gelar Latihan Kepemimpinan Dasar 2025”
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1148,7 +1174,8 @@ Melalui terselenggaranya Latihan Kepemimpinan Dasar ini, diharapkan HMJ Farmasi 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 28: PHARMACY VAGANZA 2025 “Liminal World: What If?”,
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1192,7 +1219,8 @@ Selamat kepada HMJ Farmasi UINAM dan kepada Mahasiswa Angkatan 2024 yang telah m
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 29: Attention, HMJ Farmasi hadir sebagai penyedia dan fasilitator kebutuhan mahasiswa dalam menjalani perkuliahan.
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1231,7 +1259,8 @@ Dengan demikian, HMJ Farmasi hadir bukan hanya sebagai penyedia, tetapi juga seb
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 30: World Invention and Technology Expo (WINTEX) at Indonesia Inventors Day 2025 by Innopa
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1273,7 +1302,8 @@ Dalam rangka mendukung pengembangan riset dan inovasi di bidang kesehatan, khusu
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 31: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1313,7 +1343,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 32: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1353,7 +1384,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 33: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1393,7 +1425,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 34: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1431,7 +1464,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 35: Latihan Kepemimpinan Dasar (LKD) 2025 HMJ Farmasi UIN Alauddin Makassar
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1473,7 +1507,8 @@ Kegiatan LKD 2025 Farmasi UIN Alauddin Makassar berlangsung dengan lancar, penuh
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 36: Warisan Pengobatan Bugis Kuno “Lasa Makkunrai” dipresentasikan dalam Konferensi Internasional di Thailand
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1513,7 +1548,8 @@ Kakanda junaedi Demisioner ketua HMJ farmasi priode 2020-2021 UINAM berharap pen
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 37: Pencapaian Luar Biasa: HMJ Farmasi UIN Alauddin Makassar Sukses Selenggarakan Tiga Kegiatan Nasional Secara Bersamaan!
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1557,7 +1593,8 @@ Kami mengucapkan terima kasih sebesar-besarnya kepada seluruh pihak yang telah m
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 38: HMJ Farmasi UINAM Jadi Tuan Rumah RAKORNAS 2025, Suara Timur yang Menggema Nasional
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1597,7 +1634,8 @@ Dengan semangat Viva La Vida, RAKORNAS ISMAFARSI 2025 diharapkan menjadi ruang t
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 39: Keseruan Pharmacy Camp 2025: Membangun Karakter dan Solidaritas di Malino
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1633,7 +1671,8 @@ Melalui rangkaian kegiatan ini, Pharmacy Camp diharapkan dapat menjadi ruang pem
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 40: Kolaborasi HMJ & IKA Farmasi UINAM Menghadirkan Pengabdian Masyarakat: Cek Kesehatan Gratis, Penyuluhan Kesehatan, dan sunatan  gratis di Villa Gaharu, Kecamatan Tinggimoncong
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1669,7 +1708,8 @@ Kegiatan ini dilaksanakan oleh HMJ FARMASI yang bekerjasama dengan IKA FARMASI d
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 41: DPR SAHKAN RUU TNI!! DWIFUNGSI ABRI PART 2?
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1705,7 +1745,8 @@ Menteri Pertahanan menegaskan bahwa revisi UU TNI tidak akan mengarah pada pener
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 42: Penyerahan Hasil Kajian: “DAMPAK EFISIENSI ANGGARAN TERHADAP PTKIN UIN ALAUDDIN MAKASSAR DAN ANCAMAN TERHADAP KENAIKKAN UKT T.A 2025”
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1742,7 +1783,8 @@ Penyerahan hasil kajian ini dilakukan untuk menyampaikan hasil kajian kepada pih
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 43: Selamat & Sukses | Perwakilan HMJ Farmasi UIN Alauddin Makassar Telah Mengikuti Kegiatan LKMMF II 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1778,7 +1820,8 @@ Latihan Kepemimpinan Manajemen Mahasiswa Farmasi (LKMMF) II juga menjadi momen p
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 44: HMJ Farmasi UINAM Goes To RAKERNAS XVII | Berlayar Sejajar Menggapai Cakrawala ISMAFARSI melalui RAKERNAS ke-XVII di Bumi Lancang Kuning
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1815,7 +1858,8 @@ Rapat Kerja Nasional (Rakernas) juga menjadi kesempatan penting bagi HMJ FARMASI
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 45: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1855,7 +1899,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 46: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1895,7 +1940,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 47: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1935,7 +1981,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 48: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -1973,7 +2020,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 49: MAHASISWA FARMASI UINAM BORONG MEDALI DI AJANG SONATA DAN PESONA 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2067,7 +2115,8 @@ Selamat kepada seluruh pemenang! Teruslah berprestasi dan menjadi inspirasi bagi
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 50: RAPAT KERJA HMJ FARMASI UIN ALAUDDIN MAKASSAR 2025: MERANCANG MASA DEPAN ORGANISASI
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2131,7 +2180,8 @@ _Himpunan Mahasiswa Jurusan Farmasi UIN Alauddin Makassar Periode 2025_
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 51: Pelantikan dan Raker IKA Farmasi UIN Alauddin untuk Merajut Kebersamaan dan Mewujudkan Visi Bersama
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2181,7 +2231,8 @@ Melalui Ketua Panitia Apt. Muh. Akmal A. Sukara, S.Farm., M.Si, acara ini menguc
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 52: Jebakan Kecantikan: Maraknya Peredaran Kosmetik Ilegal di Indonesia
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2231,7 +2282,8 @@ Untuk mencegah maraknya kosmetik ilegal, diperlukan langkah-langkah komprehensif
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 53: Malam Puncak Pharmacy Event 2024: Perayaan Harmoni, Kreativitas, dan Prestasi
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2289,7 +2341,8 @@ Sampai jumpa di Pharmacy Event berikutnya, dengan semangat yang lebih besar dan 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 54: Semangat Kreativitas dan Spiritualitas Warnai Semi-Final Pharmacy Event 2024 di UIN Alauddin Makassar
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2329,7 +2382,8 @@ Dengan semangat kolaborasi yang tetap terjaga, Pharmacy Event 2024 terus menjadi
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 55: “Pharmacy Event 2024: Saatnya Mahasiswa, Dosen, dan Alumni Farmasi UIN Alauddin Unjuk Potensi dan Kebersamaan!”
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2371,7 +2425,8 @@ Pharmacy Event 2024 siap melanjutkan rangkaian kompetisi yang dijadwalkan berlan
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 56: Samudra Kehidupan: Seminar Keislaman Bersama Ustadz Icuk Rifai Al-Azhary di UIN Alauddin
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2409,7 +2464,8 @@ Seminar ini tidak hanya menjadi ajang silaturahmi, tetapi juga menjadi momen pen
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 57: LKD HMJ Farmasi UIN Alauddin: Membangun Karakter, Menyiapkan Pemimpin Berintegritas
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2483,7 +2539,8 @@ Dengan semangat yang tinggi dan komitmen dari para peserta, diharapkan Latihan K
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 58: Pelaksanaan ALPHA-C 2024 Sukses Terselenggara! 150+ Peserta Berhasil Memperebutkan Juara!
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2563,7 +2620,8 @@ Keberhasilan ini tidak lepas dari dukungan dan partisipasi aktif dari seluruh el
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 59: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2603,7 +2661,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 60: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2643,7 +2702,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 61: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2683,7 +2743,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 62: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2721,7 +2782,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 63: “KERLIPAN CAHAYA” PHARMACY VAGANZA 2024
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2785,7 +2847,8 @@ Selamat kepada HMJ farmasi serta angkatan 2023 atas keberhasilan acara Pharmacy 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 64: 3 Hari Menuju Kerlipan Cahaya Megah Pharmacy Vaganza 2024
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2829,7 +2892,8 @@ Tunggu dan Saksikanlah, PHARMACY VAGANZA 2024.
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 65: ALPHA C SEASON 4: Wadah Inovasi Ide Mahasiswa Farmasi Indonesia Akan Segera Diadakan! Siapkan dirimu!
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2875,7 +2939,8 @@ Regita: 082187873519
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 66: Bersama FKIK UINAM: Membangun Kembali Harapan di Tengah Dampak Bencana Alam Luwu dan Palopo
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2917,7 +2982,8 @@ Semoga dengan adanya aksi kemanusiaan yang dilakukan oleh lembaga kemahasiswaan 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 67: Meskipun Pharmacy Camp 2024 Dilaksanakan Di Bulan Ramadhan, Antusias dan Semangat Kader Tetap Tercipta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2953,7 +3019,8 @@ Semoga tujuan dari kegiatan ini dapat tercapai dan Dinamika kampus di mahasiswa 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 68: MALAM PUNCAK PHARACY EVENT 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -2995,7 +3062,8 @@ SAMPAI JUMPA DI PHARMACY EVENT 2024
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 69: SEMI FINAL PHARMACY EVENT 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3037,7 +3105,8 @@ Kegiatan ini berakhir dengan dilaksanakan nya Malam Puncak Pharmacy Event sebaga
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 70: PEMBUKAAN PHARMACY EVENT 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3075,7 +3144,8 @@ Pada Pembukaan Pharmacy Event 2023 ini juga di rangkaikan langsung dengan lomba 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 71: PHARMACY VAGANZA 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3127,7 +3197,8 @@ Adapun penampilan yang ditampilkan pada Pharmacy Vaganza tahun ini yaitu : Angga
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 72: PHARMACY CAMP 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3163,7 +3234,8 @@ Kegiatan ini diikuti oleh 49 peserta dari angkatan 2022 Farmasi UINAM, dan dihad
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 73: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3203,7 +3275,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 74: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3243,7 +3316,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 75: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3283,7 +3357,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 76: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3321,7 +3396,8 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 77: Xternal Relation
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3366,7 +3442,8 @@ Xternal vol. 2, dilaksanakan pada tanggal 8 Oktober 2023 yang berlokasi di LT FK
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 78: LATIHAN KEPEMIMPINAN DASAR 2023
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3440,7 +3517,8 @@ Adapun materi yang dibawakan pada kegiatan ini diantaranya
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 79: Aksi Nyata Mahasiswa FKIK dalam Volun-Tour Camp 2025
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3480,7 +3558,8 @@ Kegiatan ini tidak hanya bermanfaat bagi masyarakat dan lingkungan, tetapi juga 
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 80: Pemilma 2025 Menetapkan Formatur Ketua HMJ Farmasi 2026
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3520,7 +3599,8 @@ Sebagai Formatur Ketua, A. Athallah Iman Aflah memiliki harapan besar agar HMJ F
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 81: Melalui Program Kerja Eksternal Relation, HMJ Farmasi UINAM Kunjungi BPOM
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3560,7 +3640,8 @@ Pelaksanaan program kerja Divisi Eksternal ini dapat menambah wawasan yang berma
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Article 82: “From Stress to Bless”: Seminar Keislaman HMJ Farmasi Disambut Antusias Peserta
 INSERT INTO public.articles (title, slug, excerpt, content, category, status, cover_image, published_at, author, tags, featured)
@@ -3598,5 +3679,6 @@ Melalui kegiatan ini, HMJ Farmasi Kabinet Inklusif berharap seminar keislaman da
   '{"name":"Admin KEMAFAR","role":"admin","email":"admin@kemafar.org"}'::jsonb,
   ARRAY['KEMAFAR', 'Farmasi', 'UIN Alauddin'],
   false
-);
+)
+ON CONFLICT (slug) DO NOTHING;
 
