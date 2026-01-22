@@ -25,7 +25,7 @@ const ITEMS_PER_PAGE = 20;
 
 export default function MembersPage() {
   const router = useRouter();
-  const { hasPermission } = useAuth();
+  const { profile, hasPermission, loading: authLoading } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,9 +36,10 @@ export default function MembersPage() {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    // Only run permission check if profile is loaded
-    if (!profile) return;
+    // Wait for auth to load
+    if (authLoading) return;
 
+    // Check permissions
     if (!hasPermission(['super_admin', 'admin'])) {
       router.push('/admin/dashboard');
       return;
@@ -46,12 +47,15 @@ export default function MembersPage() {
 
     fetchBatches();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.id]);
+  }, [authLoading, profile?.id]);
 
   // Initial fetch and refetch when filters/pagination change
   useEffect(() => {
-    // Only fetch if profile is loaded and user has permission
-    if (!profile || !hasPermission(['super_admin', 'admin'])) return;
+    // Wait for auth to load
+    if (authLoading) return;
+
+    // Only fetch if user has permission
+    if (!hasPermission(['super_admin', 'admin'])) return;
 
     const timer = setTimeout(() => {
       fetchMembers();
@@ -59,7 +63,7 @@ export default function MembersPage() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, statusFilter, batchFilter, currentPage, profile?.id]);
+  }, [authLoading, searchQuery, statusFilter, batchFilter, currentPage, profile?.id]);
 
   async function fetchBatches() {
     try {
@@ -70,10 +74,11 @@ export default function MembersPage() {
 
       if (error) throw error;
 
-      const uniqueBatches = [...new Set((data || []).map((m) => m.batch))].sort();
+      const uniqueBatches = [...new Set((data || []).map((m) => (m as { batch: string }).batch))].sort();
       setBatches(uniqueBatches);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load batches');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load batches';
+      toast.error(message);
     }
   }
 
@@ -113,8 +118,9 @@ export default function MembersPage() {
 
       setMembers((data || []) as Member[]);
       setTotalCount(count || 0);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load members');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load members';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -134,11 +140,12 @@ export default function MembersPage() {
       if (error) throw error;
 
       toast.success('Member deleted successfully');
-    } catch (error: any) {
+    } catch (error) {
       // Rollback on error
       setMembers(previousMembers);
       setTotalCount((prev) => prev + 1);
-      toast.error(error.message || 'Failed to delete member');
+      const message = error instanceof Error ? error.message : 'Failed to delete member';
+      toast.error(message);
     }
   }
 

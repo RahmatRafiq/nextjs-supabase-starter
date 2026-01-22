@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth/AuthContext';
 import { Users, FileText, Calendar, Award } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 interface Stats {
   members: number;
@@ -98,28 +99,28 @@ export default function DashboardPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {profile?.role !== 'kontributor' && (
-            <a
+            <Link
               href="/admin/members/new"
               className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <Users className="w-5 h-5 mr-2" />
               Add New Member
-            </a>
+            </Link>
           )}
-          <a
+          <Link
             href="/admin/articles/new"
             className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <FileText className="w-5 h-5 mr-2" />
             Create Article
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/events/new"
             className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <Calendar className="w-5 h-5 mr-2" />
             Create Event
-          </a>
+          </Link>
         </div>
       </div>
 

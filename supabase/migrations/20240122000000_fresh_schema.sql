@@ -181,6 +181,7 @@ CREATE POLICY "Kontributor update own draft" ON articles FOR UPDATE USING (
 
 -- Admin: View all, Update all, Delete all (Uses is_admin function)
 CREATE POLICY "Admin view all" ON articles FOR SELECT USING (is_admin());
+CREATE POLICY "Admin insert all" ON articles FOR INSERT WITH CHECK (is_admin());
 CREATE POLICY "Admin update all" ON articles FOR UPDATE USING (is_admin());
 CREATE POLICY "Admin delete all" ON articles FOR DELETE USING (is_admin());
 

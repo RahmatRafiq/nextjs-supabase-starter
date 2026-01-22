@@ -21,6 +21,7 @@ export interface AuthContextType {
   profile: Profile | null;
   session: Session | null;
   loading: boolean;
+  error: Error | null; // Added error state
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   hasPermission: (requiredRoles: UserRole[]) => boolean;
@@ -29,6 +30,7 @@ export interface AuthContextType {
   canManageLeadership: () => boolean;
   canPublishArticles: () => boolean;
   canEditOwnContent: (authorId: string) => boolean;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,17 +40,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null); // Added error state
 
   // Track if we're currently fetching to prevent race conditions
   const isFetchingRef = useRef(false);
+  const pendingFetchRef = useRef<string | null>(null);
   const initializedRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
 
     // Safety timeout: force loading to false after 10 seconds
+    // Safety timeout: force loading to false after 10 seconds
     const safetyTimeout = setTimeout(() => {
-      if (mounted && loading) {
+      if (mounted && !initializedRef.current) {
         console.warn('[AuthContext] Loading timeout - forcing loading to false');
         setLoading(false);
         initializedRef.current = true;
@@ -155,11 +160,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []); // Empty dependency array - only run once on mount
 
   async function fetchProfile(userId: string, silent = false) {
-    // Prevent concurrent fetches
+    // Prevent concurrent fetches - queue the request instead of ignoring it
     if (isFetchingRef.current) {
       if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthContext] Fetch already in progress, skipping');
+        console.log('[AuthContext] Fetch already in progress, queuing for later');
       }
+      // Queue this request to run after current fetch completes
+      pendingFetchRef.current = userId;
       return;
     }
 
@@ -194,13 +201,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         }
 
-        // If profile not found (PGRST116), try to create one
+        // If profile not found (PGRST116), it might be creating via trigger.
+        // Wait a bit and retry once.
         if (error.code === 'PGRST116') {
           if (process.env.NODE_ENV === 'development') {
-            console.log('[AuthContext] Profile not found (PGRST116), creating new profile...');
+            console.log('[AuthContext] Profile not found (PGRST116), waiting for trigger...');
           }
-          // Don't use finally here - createProfileForUser handles loading state
-          return await createProfileForUser(userId);
+
+          if (!silent) {
+            // Wait 1 second and try again
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const { data: retryData, error: retryError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .single();
+
+            if (!retryError && retryData) {
+              setProfile(retryData);
+              return;
+            }
+          }
+
+          throw error;
         }
 
         // For other errors, log and continue
@@ -209,10 +233,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (process.env.NODE_ENV === 'development') {
+        const fetchedProfile = data as Profile;
         console.log('[AuthContext] Profile fetched successfully:', {
-          id: data.id,
-          email: data.email,
-          role: data.role,
+          id: fetchedProfile.id,
+          email: fetchedProfile.email,
+          role: fetchedProfile.role,
         });
       }
 
@@ -221,89 +246,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (process.env.NODE_ENV === 'development') {
         console.error('[AuthContext] Error in fetchProfile:', error);
       }
-      setProfile(null);
+
+      // Only clear profile if it's explicitly not found or permission denied (which might mean role revocation)
+      // For network errors or timeouts, keep the existing profile to prevent random logouts
+      if (error.code === 'PGRST116' || error.code === '42501') {
+        setProfile(null);
+        setError(error); // Set error for UI
+      } else {
+        console.warn('[AuthContext] Fetch failed but keeping existing profile state to prevent logout:', error);
+        setError(error); // Set error for UI even if we keep profile (warn user)
+      }
 
       // Don't throw - we want to complete initialization even if profile fetch fails
     } finally {
       isFetchingRef.current = false;
       setLoading(false);
       initializedRef.current = true;
-    }
-  }
 
-  async function createProfileForUser(userId: string) {
-    try {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthContext] Starting profile creation for user:', userId);
+      // Process pending fetch if any
+      if (pendingFetchRef.current) {
+        const pendingUserId = pendingFetchRef.current;
+        pendingFetchRef.current = null;
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[AuthContext] Processing pending fetch for:', pendingUserId);
+        }
+        // Use setTimeout to avoid potential stack overflow with recursive calls
+        setTimeout(() => fetchProfile(pendingUserId, true), 0);
       }
-
-      // Get user email from auth
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-
-      if (authError) {
-        console.error('[AuthContext] Error getting auth user:', authError);
-        throw authError;
-      }
-
-      if (!authUser) {
-        throw new Error('User not found in auth');
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthContext] Auth user found:', {
-          id: authUser.id,
-          email: authUser.email,
-          metadata: authUser.user_metadata,
-        });
-      }
-
-      // Create profile with default role
-      const newProfile = {
-        id: userId,
-        email: authUser.email || '',
-        full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
-        role: 'kontributor' as const, // Default role
-      };
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthContext] Attempting to insert profile:', newProfile);
-      }
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert(newProfile as any) // Type assertion to bypass Supabase type inference issue
-        .select()
-        .single();
-
-      if (error) {
-        console.error('[AuthContext] Profile creation failed:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        });
-        throw error;
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthContext] Profile created successfully:', data);
-      }
-
-      setProfile(data);
-    } catch (error: any) {
-      console.error('[AuthContext] Error creating profile:', error);
-      setProfile(null);
-
-      // Show user-friendly error
-      if (error.code === '42501') {
-        console.error('[AuthContext] Permission denied - RLS policy issue or missing table permissions');
-      } else if (error.code === '23505') {
-        console.error('[AuthContext] Profile already exists - possible race condition');
-      }
-    } finally {
-      isFetchingRef.current = false;
-      setLoading(false);
-      initializedRef.current = true;
     }
   }
 
@@ -354,12 +323,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return user.id === authorId;
   }, [user]);
 
+  const refreshProfile = useCallback(async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  }, [user]);
+
   // Memoize context value to prevent unnecessary re-renders
   const value = useMemo(() => ({
     user,
     profile,
     session,
     loading,
+    error,
     signIn,
     signOut,
     hasPermission,
@@ -368,11 +344,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     canManageLeadership,
     canPublishArticles,
     canEditOwnContent,
+    refreshProfile,
   }), [
     user,
     profile,
     session,
     loading,
+    error, // Add to dependency array
     signIn,
     signOut,
     hasPermission,
@@ -381,6 +359,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     canManageLeadership,
     canPublishArticles,
     canEditOwnContent,
+    refreshProfile,
   ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
