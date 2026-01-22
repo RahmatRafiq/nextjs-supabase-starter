@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth, UserRole } from '@/lib/auth/AuthContext';
-import { toast } from 'sonner';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { CreateUserFormData } from '@/types';
+import { showError, showSuccess, handleApiError } from '@/lib/utils/error-handler';
 
 const ROLES: { value: UserRole; label: string; description: string }[] = [
   {
@@ -26,23 +27,17 @@ const ROLES: { value: UserRole; label: string; description: string }[] = [
   },
 ];
 
-interface FormData {
-  email: string;
-  password: string;
-  full_name: string;
-  role: UserRole;
-}
-
 export default function NewUserPage() {
   const router = useRouter();
   const { hasPermission, session } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<CreateUserFormData>({
     email: '',
     password: '',
     full_name: '',
     role: 'kontributor',
+    avatar_url: '',
   });
 
   useEffect(() => {
@@ -66,41 +61,32 @@ export default function NewUserPage() {
     }
     setFormData((prev) => ({ ...prev, password }));
     setShowPassword(true);
-    toast.success('Password generated');
+    showSuccess('Password generated');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate
     if (!formData.email || !formData.password || !formData.full_name) {
-      toast.error('Please fill in all required fields');
+      showError('Please fill in all required fields');
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      showError('Password must be at least 6 characters');
       return;
     }
 
     try {
       setLoading(true);
-      console.log('Starting user creation...');
 
       if (!session) {
-        toast.error('Not authenticated');
+        showError('Not authenticated');
         setLoading(false);
         return;
       }
 
-      console.log('Session found, preparing request...');
-      console.log('Access token:', session.access_token.substring(0, 20) + '...');
-
-      // Call Next.js API route
-      const url = '/api/admin/create-user';
-      console.log('Calling API route:', url);
-
-      const response = await fetch(url, {
+      const response = await fetch('/api/admin/create-user', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -114,21 +100,14 @@ export default function NewUserPage() {
         }),
       });
 
-      console.log('Response status:', response.status);
-
-      const result = await response.json();
-      console.log('Response data:', result);
-
       if (!response.ok) {
-        throw new Error(result.error || `Server error: ${response.status}`);
+        await handleApiError(response, 'Failed to create user');
       }
 
-      toast.success('User created successfully');
+      showSuccess('User created successfully');
       router.push('/admin/users');
     } catch (error) {
-      console.error('Error creating user:', error);
-      const message = error instanceof Error ? error.message : 'Failed to create user';
-      toast.error(message);
+      showError(error, 'Failed to create user');
     } finally {
       setLoading(false);
     }

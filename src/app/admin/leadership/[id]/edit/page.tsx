@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
-import { toast } from 'sonner';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import Link from 'next/link';
+import { LeadershipFormData } from '@/types';
+import { showError, showSuccess } from '@/lib/utils/error-handler';
+import { FormSkeleton } from '@/components/ui/Skeleton';
 
 const POSITIONS = [
   { value: 'ketua', label: 'Ketua' },
@@ -27,26 +29,6 @@ const DIVISIONS = [
   { value: 'islamic-spirituality', label: 'Islamic Spirituality' },
 ];
 
-interface FormData {
-  name: string;
-  position: string;
-  division: string;
-  photo: string;
-  email: string;
-  phone: string;
-  nim: string;
-  batch: string;
-  bio: string;
-  social_media: {
-    instagram?: string;
-    linkedin?: string;
-    twitter?: string;
-  };
-  period_start: string;
-  period_end: string;
-  order: number;
-}
-
 export default function EditLeadershipPage() {
   const router = useRouter();
   const params = useParams();
@@ -55,7 +37,7 @@ export default function EditLeadershipPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [photoPreview, setPhotoPreview] = useState<string>('');
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<LeadershipFormData>({
     name: '',
     position: '',
     division: '',
@@ -111,8 +93,7 @@ export default function EditLeadershipPage() {
       });
       setPhotoPreview(data.photo || '');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to load leader';
-      toast.error(message);
+      showError(error, 'Failed to load leader');
       router.push('/admin/leadership');
     } finally {
       setInitialLoading(false);
@@ -135,44 +116,38 @@ export default function EditLeadershipPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+      showError('Please upload an image file');
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image size must be less than 2MB');
+      showError('Image size must be less than 2MB');
       return;
     }
 
     try {
       setLoading(true);
 
-      // Create unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `leadership/${fileName}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('public-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('public-images')
         .getPublicUrl(filePath);
 
       setFormData((prev) => ({ ...prev, photo: publicUrl }));
       setPhotoPreview(publicUrl);
-      toast.success('Photo uploaded successfully');
+      showSuccess('Photo uploaded successfully');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to upload photo';
-      toast.error(message);
+      showError(error, 'Failed to upload photo');
     } finally {
       setLoading(false);
     }
@@ -186,16 +161,14 @@ export default function EditLeadershipPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
     if (!formData.name || !formData.position || !formData.photo || !formData.period_start || !formData.period_end) {
-      toast.error('Please fill in all required fields');
+      showError('Please fill in all required fields');
       return;
     }
 
     try {
       setLoading(true);
 
-      // Clean social media data
       const cleanedSocialMedia = Object.fromEntries(
         Object.entries(formData.social_media).filter(([_, value]) => value !== '')
       );
@@ -221,11 +194,10 @@ export default function EditLeadershipPage() {
 
       if (error) throw error;
 
-      toast.success('Leader updated successfully');
+      showSuccess('Leader updated successfully');
       router.push('/admin/leadership');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update leader';
-      toast.error(message);
+      showError(error, 'Failed to update leader');
     } finally {
       setLoading(false);
     }
@@ -233,8 +205,15 @@ export default function EditLeadershipPage() {
 
   if (initialLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+        <FormSkeleton />
       </div>
     );
   }

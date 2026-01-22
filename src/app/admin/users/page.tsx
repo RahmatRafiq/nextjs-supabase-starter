@@ -4,19 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth, UserRole } from '@/lib/auth/AuthContext';
-import { toast } from 'sonner';
 import { Search, Plus, Edit, Trash2, Shield } from 'lucide-react';
 import Link from 'next/link';
-
-interface User {
-  id: string;
-  email: string;
-  full_name: string | null;
-  role: UserRole;
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { User } from '@/types';
+import { showError, showSuccess, handleApiError } from '@/lib/utils/error-handler';
+import { TableSkeleton } from '@/components/ui/Skeleton';
 
 const ROLE_LABELS: Record<UserRole, string> = {
   super_admin: 'Super Admin',
@@ -75,14 +67,12 @@ export default function UsersPage() {
     try {
       setLoading(true);
 
-      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Not authenticated');
+        showError('Not authenticated');
         return;
       }
 
-      // Build query params
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: ITEMS_PER_PAGE.toString(),
@@ -91,77 +81,70 @@ export default function UsersPage() {
       if (searchQuery) params.append('search', searchQuery);
       if (roleFilter !== 'all') params.append('role', roleFilter);
 
-      // Call API route
       const response = await fetch(`/api/admin/users?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
       });
 
       if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || 'Failed to load users');
+        await handleApiError(response, 'Failed to load users');
       }
 
       const result = await response.json();
       setUsers(result.users || []);
       setTotalCount(result.totalCount || 0);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to load users';
-      toast.error(message);
+      showError(error, 'Failed to load users');
     } finally {
       setLoading(false);
     }
   }
 
   async function handleDelete(id: string, email: string) {
-    // Prevent deleting own account
     if (id === profile?.id) {
-      toast.error('You cannot delete your own account');
+      showError('You cannot delete your own account');
       return;
     }
 
     if (!confirm(`Are you sure you want to delete ${email}?`)) return;
 
-    // Optimistic update
     const previousUsers = [...users];
     setUsers(users.filter((u) => u.id !== id));
     setTotalCount((prev) => prev - 1);
 
     try {
-      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Not authenticated');
-      }
+      if (!session) throw new Error('Not authenticated');
 
-      // Call API route
       const response = await fetch(`/api/admin/users/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
       });
 
       if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || 'Failed to delete user');
+        await handleApiError(response, 'Failed to delete user');
       }
 
-      toast.success('User deleted successfully');
+      showSuccess('User deleted successfully');
     } catch (error) {
-      // Rollback on error
       setUsers(previousUsers);
       setTotalCount((prev) => prev + 1);
-      const message = error instanceof Error ? error.message : 'Failed to delete user';
-      toast.error(message);
+      showError(error, 'Failed to delete user');
     }
   }
 
   if (loading && users.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-96 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <TableSkeleton rows={10} />
+        </div>
       </div>
     );
   }

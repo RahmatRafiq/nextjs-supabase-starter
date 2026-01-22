@@ -13,38 +13,29 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  console.log('[LoginPage] Rendering...');
-
   const { signIn, user, profile, loading: authLoading } = useAuth();
 
-  console.log('[LoginPage] authLoading:', authLoading, 'user:', user ? 'exists' : 'null', 'profile:', profile ? 'exists' : 'null', 'mounted:', mounted);
-
   useEffect(() => {
-    console.log('[LoginPage] Component mounted');
     setMounted(true);
   }, []);
 
   // Redirect if already logged in with valid profile
   useEffect(() => {
     if (!authLoading && user && profile) {
-      console.log('[LoginPage] User logged in with profile, redirecting to dashboard');
       router.push('/admin/dashboard');
-    } else if (!authLoading && user && !profile) {
-      console.error('[LoginPage] User exists but profile missing. User ID:', user.id);
-      setError('Your account is not set up correctly. Please contact administrator.');
     }
+    // Don't show error immediately - profile might be loading
+    // If profile is truly missing, user will be stuck at loading screen
+    // and can contact admin
   }, [authLoading, user, profile, router]);
 
   if (!mounted || authLoading) {
-    console.log('[LoginPage] Showing loading state');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
-
-  console.log('[LoginPage] Rendering login form');
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,9 +44,11 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      router.push('/admin/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+      // Don't navigate manually - let the useEffect handle it
+      // This prevents race conditions and double navigation
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid email or password';
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth, UserRole } from '@/lib/auth/AuthContext';
-import { toast } from 'sonner';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import Link from 'next/link';
+import { UserFormData } from '@/types';
+import { showError, showSuccess, handleApiError } from '@/lib/utils/error-handler';
+import { FormSkeleton } from '@/components/ui/Skeleton';
 
 const ROLES: { value: UserRole; label: string; description: string }[] = [
   {
@@ -26,13 +28,6 @@ const ROLES: { value: UserRole; label: string; description: string }[] = [
   },
 ];
 
-interface FormData {
-  email: string;
-  full_name: string;
-  role: UserRole;
-  avatar_url: string;
-}
-
 export default function EditUserPage() {
   const router = useRouter();
   const params = useParams();
@@ -42,7 +37,7 @@ export default function EditUserPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<UserFormData>({
     email: '',
     full_name: '',
     role: 'kontributor',
@@ -63,31 +58,26 @@ export default function EditUserPage() {
 
   async function fetchUser() {
     try {
-      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Not authenticated');
+        showError('Not authenticated');
         router.push('/admin/users');
         return;
       }
 
-      // Call API route to get single user
       const response = await fetch(`/api/admin/users/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
       });
 
       if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || 'Failed to load user');
+        await handleApiError(response, 'Failed to load user');
       }
 
       const result = await response.json();
       const userData = result.user;
 
       if (!userData) {
-        toast.error('User not found');
+        showError('User not found');
         router.push('/admin/users');
         return;
       }
@@ -100,8 +90,7 @@ export default function EditUserPage() {
       });
       setAvatarPreview(userData.avatar_url || '');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to load user';
-      toast.error(message);
+      showError(error, 'Failed to load user');
       router.push('/admin/users');
     } finally {
       setInitialLoading(false);
@@ -117,44 +106,38 @@ export default function EditUserPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+      showError('Please upload an image file');
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image size must be less than 2MB');
+      showError('Image size must be less than 2MB');
       return;
     }
 
     try {
       setLoading(true);
 
-      // Create unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('public-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('public-images')
         .getPublicUrl(filePath);
 
       setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
       setAvatarPreview(publicUrl);
-      toast.success('Avatar uploaded successfully');
+      showSuccess('Avatar uploaded successfully');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to upload avatar';
-      toast.error(message);
+      showError(error, 'Failed to upload avatar');
     } finally {
       setLoading(false);
     }
@@ -168,30 +151,26 @@ export default function EditUserPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Prevent changing own role
     if (id === profile?.id) {
-      toast.error('You cannot change your own role');
+      showError('You cannot change your own role');
       return;
     }
 
-    // Validate required fields
     if (!formData.full_name || !formData.role) {
-      toast.error('Please fill in all required fields');
+      showError('Please fill in all required fields');
       return;
     }
 
     try {
       setLoading(true);
 
-      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Not authenticated');
+        showError('Not authenticated');
         setLoading(false);
         return;
       }
 
-      // Call API route
       const response = await fetch(`/api/admin/users/${id}`, {
         method: 'PATCH',
         headers: {
@@ -206,15 +185,13 @@ export default function EditUserPage() {
       });
 
       if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || 'Failed to update user');
+        await handleApiError(response, 'Failed to update user');
       }
 
-      toast.success('User updated successfully');
+      showSuccess('User updated successfully');
       router.push('/admin/users');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update user';
-      toast.error(message);
+      showError(error, 'Failed to update user');
     } finally {
       setLoading(false);
     }
@@ -222,8 +199,15 @@ export default function EditUserPage() {
 
   if (initialLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+        <FormSkeleton />
       </div>
     );
   }
