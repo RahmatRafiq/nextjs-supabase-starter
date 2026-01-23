@@ -27,25 +27,51 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to check if user is admin (uses JWT claims - NO DB QUERY)
+-- Function to check if user is admin (uses JWT claims with fallback to profiles)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 DECLARE
   user_role text;
 BEGIN
-  -- Get role from JWT claims (no database query = no recursion)
+  -- First try to get role from JWT claims (preferred method)
   SELECT (auth.jwt() -> 'app_metadata' ->> 'role') INTO user_role;
+
+  -- If role exists in JWT, use it
+  IF user_role IN ('admin', 'super_admin') THEN
+    RETURN true;
+  END IF;
+
+  -- Fallback: Check profiles table if JWT doesn't have role
+  -- This is safe because it's in a function with SECURITY DEFINER
+  -- and we're only doing a single SELECT (no recursion)
+  SELECT role INTO user_role
+  FROM public.profiles
+  WHERE id = auth.uid()
+  LIMIT 1;
+
   RETURN user_role IN ('admin', 'super_admin');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to check if user is super_admin (uses JWT claims)
+-- Function to check if user is super_admin (uses JWT claims with fallback to profiles)
 CREATE OR REPLACE FUNCTION public.is_super_admin()
 RETURNS BOOLEAN AS $$
 DECLARE
   user_role text;
 BEGIN
+  -- First try JWT
   SELECT (auth.jwt() -> 'app_metadata' ->> 'role') INTO user_role;
+
+  IF user_role = 'super_admin' THEN
+    RETURN true;
+  END IF;
+
+  -- Fallback to profiles table
+  SELECT role INTO user_role
+  FROM public.profiles
+  WHERE id = auth.uid()
+  LIMIT 1;
+
   RETURN user_role = 'super_admin';
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
