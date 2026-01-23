@@ -6,7 +6,6 @@ import { ArrowRight, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
-import { RepositoryFactory } from '@/infrastructure/repositories/RepositoryFactory';
 import type { ArticleListItem } from '@/core/entities/Article';
 import { ARTICLE_CATEGORIES } from '@/lib/constants';
 
@@ -17,8 +16,11 @@ export function ArticlesPreview() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const repo = RepositoryFactory.getArticleRepository();
-        const data = await repo.getFeatured(3);
+        const response = await fetch('/api/articles/featured');
+        if (!response.ok) {
+          throw new Error('Failed to fetch articles');
+        }
+        const data = await response.json();
         setArticles(data);
       } catch (error) {
         console.error('Failed to fetch articles:', error);

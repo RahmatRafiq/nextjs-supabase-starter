@@ -6,7 +6,6 @@ import { ArrowRight, Calendar, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
-import { RepositoryFactory } from '@/infrastructure/repositories/RepositoryFactory';
 import type { EventListItem } from '@/core/entities/Event';
 
 export function EventsPreview() {
@@ -16,8 +15,11 @@ export function EventsPreview() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const repo = RepositoryFactory.getEventRepository();
-        const data = await repo.getUpcoming(3);
+        const response = await fetch('/api/events/upcoming');
+        if (!response.ok) {
+          throw new Error('Failed to fetch events');
+        }
+        const data = await response.json();
         setEvents(data);
       } catch (error) {
         console.error('Failed to fetch events:', error);
