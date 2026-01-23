@@ -22,5 +22,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'kemafar-auth',
+    flowType: 'pkce',
   },
 });

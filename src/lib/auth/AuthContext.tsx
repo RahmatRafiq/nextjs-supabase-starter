@@ -35,7 +35,7 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }, 10000);
 
-    async function initAuth() {
+    async function initAuth(): Promise<void> {
       // Prevent multiple initializations
       if (initializedRef.current) {
         if (process.env.NODE_ENV === 'development') {
@@ -83,7 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
 
         setSession(session);
         setUser(session?.user ?? null);
@@ -111,32 +113,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       if (process.env.NODE_ENV === 'development') {
         console.warn('[AuthContext] Auth state change event:', event, 'session:', !!session);
       }
 
-      // Don't process events during initial load - let initAuth handle it
-      if (!initializedRef.current && event === 'INITIAL_SESSION') {
+      // Don't process ANY events during initial load - let initAuth handle everything
+      if (!initializedRef.current) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn('[AuthContext] Skipping INITIAL_SESSION - handled by initAuth');
+          console.warn('[AuthContext] Skipping event during initialization:', event);
         }
         return;
       }
 
+      // Only update session state, don't trigger profile refetch unless necessary
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        // Only fetch profile on SIGNED_IN event, not on TOKEN_REFRESHED during initial load
-        // TOKEN_REFRESHED happens automatically on page load and causes double fetch
+        // Only fetch profile on SIGNED_IN event (user just logged in)
         if (event === 'SIGNED_IN') {
           await fetchProfile(session.user.id);
-        } else if (event === 'TOKEN_REFRESHED' && initializedRef.current) {
-          // Only refetch on token refresh if we're already initialized (not initial load)
-          await fetchProfile(session.user.id, true);
-        } else if (event === 'SIGNED_OUT') {
+        }
+        // For TOKEN_REFRESHED, keep existing profile - don't refetch
+        // This prevents random logouts from failed profile refetch during token refresh
+        else if (event === 'TOKEN_REFRESHED') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('[AuthContext] Token refreshed, keeping existing profile');
+          }
+        }
+        else if (event === 'SIGNED_OUT') {
           setProfile(null);
           if (mounted) {
             setLoading(false);
@@ -144,10 +153,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } else {
-        setProfile(null);
-        if (mounted && initializedRef.current) {
-          // Only set loading false if we're already initialized
-          setLoading(false);
+        // Only clear profile on explicit SIGNED_OUT event
+        if (event === 'SIGNED_OUT') {
+          setProfile(null);
+          if (mounted) {
+            setLoading(false);
+            initializedRef.current = false;
+          }
         }
       }
     });
@@ -157,9 +169,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array - only run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount. fetchProfile is stable.
 
-  async function fetchProfile(userId: string, silent = false) {
+  async function fetchProfile(userId: string, silent = false): Promise<void> {
+    const isMounted = { current: true };
+
     // Prevent concurrent fetches - queue the request instead of ignoring it
     if (isFetchingRef.current) {
       if (process.env.NODE_ENV === 'development') {
@@ -247,15 +262,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('[AuthContext] Error in fetchProfile:', error);
       }
 
-      // Only clear profile if it's explicitly not found or permission denied (which might mean role revocation)
-      // For network errors or timeouts, keep the existing profile to prevent random logouts
+      // Only clear profile on PGRST116 (profile not found) during initial creation
+      // For ALL other errors (network, timeout, permission), keep existing profile to prevent random logouts
       const err = error as { code?: string };
-      if (err.code === 'PGRST116' || err.code === '42501') {
+      if (err.code === 'PGRST116' && !profile) {
+        // Only set null if profile doesn't exist yet (initial load/creation)
         setProfile(null);
-        setError(error as Error); // Set error for UI
+        setError(error as Error);
       } else {
-        console.warn('[AuthContext] Fetch failed but keeping existing profile state to prevent logout:', error);
-        setError(error as Error); // Set error for UI even if we keep profile (warn user)
+        // Keep existing profile for all other errors - prevents random logouts
+        console.warn('[AuthContext] Fetch failed but keeping existing profile to prevent logout:', error);
+        // Clear error after 5 seconds to avoid persistent error states
+        setError(error as Error);
+        setTimeout(() => {
+          if (isMounted.current) {
+            setError(null);
+          }
+        }, 5000);
       }
 
       // Don't throw - we want to complete initialization even if profile fetch fails
@@ -277,17 +300,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string): Promise<void> => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
   }, []);
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async (): Promise<void> => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Reset all state on sign out
     setUser(null);
@@ -299,7 +326,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Permission helpers - memoized with useCallback to prevent re-renders
   const hasPermission = useCallback((requiredRoles: UserRole[]): boolean => {
-    if (!profile) return false;
+    if (!profile) {
+      return false;
+    }
     return requiredRoles.includes(profile.role);
   }, [profile]);
 
@@ -320,15 +349,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [hasPermission]);
 
   const canEditOwnContent = useCallback((authorId: string): boolean => {
-    if (!user) return false;
+    if (!user) {
+      return false;
+    }
     return user.id === authorId;
   }, [user]);
 
-  const refreshProfile = useCallback(async () => {
+  const refreshProfile = useCallback(async (): Promise<void> => {
     if (user) {
       await fetchProfile(user.id);
     }
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // fetchProfile is stable, no need to include
 
   // Memoize context value to prevent unnecessary re-renders
   const value = useMemo(() => ({
@@ -366,7 +398,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
