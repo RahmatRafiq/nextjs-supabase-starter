@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getArticleBySlug, getArticlesByCategory } from '@/lib/api/articles';
-import { ARTICLE_CATEGORIES } from '@/config/domain.config';
+import { ARTICLE_CATEGORIES } from '@/config';
 import { MarkdownContent } from '@/shared/components/ui/MarkdownContent';
 import { Calendar, Tag, ArrowLeft, Eye } from 'lucide-react';
 import { format } from 'date-fns';

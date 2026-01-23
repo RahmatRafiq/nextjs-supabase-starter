@@ -7,8 +7,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ROUTES } from '@/config/navigation.config';
-import { SITE_CONFIG } from '@/config/site.config';
+import { ROUTES, SITE_CONFIG } from '@/config';
 import { cn } from '@/shared/utils/cn';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

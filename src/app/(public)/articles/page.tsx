@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { z } from 'zod';
 import { getPaginatedArticles, ArticleCategory } from '@/lib/api/articles';
-import { ARTICLE_CATEGORIES } from '@/config/domain.config';
+import { ARTICLE_CATEGORIES } from '@/config';
 import { ArticlesGrid } from '@/features/articles/components/ArticlesGrid';
 import { SegmentedControl } from '@/shared/components/ui/SegmentedControl';
 import { Pagination } from '@/shared/components/ui/Pagination';

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Article as ArticleListItem } from '@/lib/api/articles';
-import { ARTICLE_CATEGORIES } from '@/config/domain.config';
+import { ARTICLE_CATEGORIES } from '@/config';
 
 interface ArticlesGridProps {
   articles: ArticleListItem[];

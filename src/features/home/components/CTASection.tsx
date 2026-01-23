@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Button } from '@/shared/components/ui/Button';
 import { Phone, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { HomeSettings } from '@/config/content.config';
+import { HomeSettings } from '@/config';
 
 interface CTASectionProps {
   data: HomeSettings['cta'];

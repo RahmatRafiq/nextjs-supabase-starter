@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ROUTES } from '@/config/navigation.config';
+import { ROUTES } from '@/config';
 import { cn } from '@/shared/utils/cn';
 import { motion } from 'framer-motion';
 import { Home, Info, Users, Mic, Calendar, UserCircle } from 'lucide-react';

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Poppins } from 'next/font/google';
 import './globals.css';
-import { SITE_CONFIG } from '@/config/site.config';
+import { SITE_CONFIG } from '@/config';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/lib/auth/AuthContext';
 

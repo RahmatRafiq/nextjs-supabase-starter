@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import { HeroSection } from '@/features/home/components/HeroSection';
-import { HOME_CONTENT } from '@/config/content.config';
+import { HOME_CONTENT } from '@/config';
 
 const FeaturesSection = dynamic(() => import('@/features/home/components/FeaturesSection').then(mod => ({ default: mod.FeaturesSection })), {
   loading: () => <div className="h-96" />,

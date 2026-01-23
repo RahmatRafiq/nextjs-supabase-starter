@@ -5,7 +5,7 @@
 
 import { Metadata } from 'next';
 import { AboutContent } from '@/features/about/components/AboutContent';
-import { ABOUT_CONTENT } from '@/config/content.config';
+import { ABOUT_CONTENT } from '@/config';
 
 export const metadata: Metadata = {
   title: 'Tentang Kami',

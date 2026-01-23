@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Sparkles, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CountingNumber } from '@/shared/components/ui/CountingNumber';
-import { HomeSettings } from '@/config/content.config';
+import { HomeSettings } from '@/config';
 
 // Optimized animation variants for better performance
 const container = {

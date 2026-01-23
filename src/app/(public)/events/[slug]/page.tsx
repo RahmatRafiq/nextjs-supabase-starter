@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getEventBySlug, getEventsByCategory } from '@/lib/api/events';
-import { EVENT_CATEGORIES } from '@/config/domain.config';
+import { EVENT_CATEGORIES } from '@/config';
 import { EVENT_STATUS_COLORS, EVENT_STATUS_LABELS } from '@/lib/constants/event';
 import { MarkdownContent } from '@/shared/components/ui/MarkdownContent';
 import { Calendar, MapPin, Users, ArrowLeft, ExternalLink, Clock, User } from 'lucide-react';

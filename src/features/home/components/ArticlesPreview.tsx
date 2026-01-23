@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import type { Article as ArticleListItem } from '@/lib/api/articles';
-import { ARTICLE_CATEGORIES } from '@/config/domain.config';
+import { ARTICLE_CATEGORIES } from '@/config';
 
 export function ArticlesPreview() {
   const [articles, setArticles] = useState<ArticleListItem[]>([]);

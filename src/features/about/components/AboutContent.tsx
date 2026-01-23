@@ -4,7 +4,7 @@ import { Timeline } from '@/features/about/components/Timeline';
 import { Section } from '@/shared/components/ui/Section';
 import { Leaf, Target, Heart, Award, BookOpen, Users, HeartHandshake, Briefcase, LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AboutSettings } from '@/config/content.config';
+import { AboutSettings } from '@/config';
 
 const iconMap: Record<string, LucideIcon> = {
     BookOpen,

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { getActiveLeadership, type LeadershipMember } from '@/lib/api/leadership';
-import { DIVISIONS } from '@/config/domain.config';
+import { DIVISIONS } from '@/config';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 
