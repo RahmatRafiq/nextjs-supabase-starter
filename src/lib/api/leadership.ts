@@ -5,6 +5,16 @@
 import { supabase } from '@/lib/supabase/client';
 
 /**
+ * Social media JSONB structure
+ */
+interface SocialMediaRaw {
+  instagram?: string;
+  linkedin?: string;
+  twitter?: string;
+  facebook?: string;
+}
+
+/**
  * Leadership from database (raw snake_case)
  */
 interface LeadershipRaw {
@@ -12,15 +22,16 @@ interface LeadershipRaw {
   name: string;
   position: string;
   division: string | null;
-  period: string;
+  photo: string;
   email: string | null;
   phone: string | null;
-  avatar_url: string | null;
+  nim: string | null;
+  batch: string | null;
   bio: string | null;
-  instagram: string | null;
-  linkedin: string | null;
-  display_order: number;
-  is_active: boolean;
+  social_media: SocialMediaRaw | null;
+  period_start: string;
+  period_end: string;
+  order: number;
   created_at: string;
   updated_at: string;
 }
@@ -52,28 +63,27 @@ export interface LeadershipMember {
  * Transform raw database leadership to frontend format
  */
 function transformLeadership(raw: LeadershipRaw): LeadershipMember {
-  // Parse period - format should be "2024-2025"
-  const periodParts = raw.period.split('-');
+  // Parse period from period_start and period_end
   const period = {
-    start: periodParts[0] || raw.period,
-    end: periodParts[1] || raw.period,
+    start: raw.period_start,
+    end: raw.period_end,
   };
 
   return {
     id: raw.id,
     name: raw.name,
     position: raw.position,
-    division: raw.division || undefined,
+    division: raw.division ?? undefined,
     period,
-    email: raw.email || undefined,
-    phone: raw.phone || undefined,
-    photo: raw.avatar_url || '/images/default-avatar.png',
-    bio: raw.bio || undefined,
-    socialMedia: {
-      instagram: raw.instagram || undefined,
-      linkedin: raw.linkedin || undefined,
-    },
-    order: raw.display_order,
+    email: raw.email ?? undefined,
+    phone: raw.phone ?? undefined,
+    photo: raw.photo ?? '/images/default-avatar.png',
+    bio: raw.bio ?? undefined,
+    socialMedia: raw.social_media ? {
+      instagram: raw.social_media.instagram,
+      linkedin: raw.social_media.linkedin,
+    } : undefined,
+    order: raw.order,
   };
 }
 
@@ -84,69 +94,76 @@ export async function getLeadership(): Promise<LeadershipMember[]> {
   const { data, error } = await supabase
     .from('leadership')
     .select('*')
-    .order('display_order', { ascending: true });
+    .order('order', { ascending: true });
 
   if (error) {
     console.error('Error fetching leadership:', error);
     throw new Error('Failed to fetch leadership');
   }
 
-  return (data || []).map(transformLeadership);
+  return (data ?? []).map(transformLeadership);
 }
 
 /**
- * Get active leadership only
+ * Get active leadership (current period)
  */
 export async function getActiveLeadership(): Promise<LeadershipMember[]> {
+  const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
   const { data, error } = await supabase
     .from('leadership')
     .select('*')
-    .eq('is_active', true)
-    .order('display_order', { ascending: true });
+    .lte('period_start', now)
+    .gte('period_end', now)
+    .order('order', { ascending: true });
 
   if (error) {
     console.error('Error fetching active leadership:', error);
     throw new Error('Failed to fetch active leadership');
   }
 
-  return (data || []).map(transformLeadership);
+  return (data ?? []).map(transformLeadership);
 }
 
 /**
- * Get leadership by period
+ * Get leadership by period year (e.g., "2024")
  */
-export async function getLeadershipByPeriod(period: string): Promise<LeadershipMember[]> {
+export async function getLeadershipByPeriod(year: string): Promise<LeadershipMember[]> {
   const { data, error } = await supabase
     .from('leadership')
     .select('*')
-    .eq('period', period)
-    .order('display_order', { ascending: true });
+    .gte('period_start', `${year}-01-01`)
+    .lte('period_start', `${year}-12-31`)
+    .order('order', { ascending: true });
 
   if (error) {
     console.error('Error fetching leadership by period:', error);
     throw new Error('Failed to fetch leadership by period');
   }
 
-  return (data || []).map(transformLeadership);
+  return (data ?? []).map(transformLeadership);
 }
 
 /**
  * Get leadership by division
  */
 export async function getLeadershipByDivision(division: string): Promise<LeadershipMember[]> {
+  const now = new Date().toISOString().split('T')[0];
+
   const { data, error } = await supabase
     .from('leadership')
     .select('*')
     .eq('division', division)
-    .eq('is_active', true)
-    .order('display_order', { ascending: true });
+    .lte('period_start', now)
+    .gte('period_end', now)
+    .order('order', { ascending: true });
 
   if (error) {
     console.error('Error fetching leadership by division:', error);
     throw new Error('Failed to fetch leadership by division');
   }
 
-  return (data || []).map(transformLeadership);
+  return (data ?? []).map(transformLeadership);
 }
 
 /**
