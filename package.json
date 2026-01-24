@@ -1,7 +1,7 @@
 {
-  "name": "griyaflora_babulu",
+  "name": "nextjs-supabase-starterkit",
   "version": "1.0.0",
-  "description": "Agrotourism landing page for Griya Flora Babulu",
+  "description": "Production-ready Next.js + Supabase Starter Kit with Auth, RLS, Admin Panel, and Clean Architecture",
   "private": true,
   "scripts": {
     "dev": "next dev",

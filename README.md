@@ -88,8 +88,8 @@
 
 ### 1. Clone & Install
 ```bash
-git clone <repo-url>
-cd griyaflora_babulu
+git clone https://github.com/efisiendev/nextjs-supabase-starterkit.git
+cd nextjs-supabase-starterkit
 npm install
 ```
 
