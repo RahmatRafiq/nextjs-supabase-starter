@@ -105,7 +105,7 @@ export async function getMembers(): Promise<Member[]> {
     throw new Error('Failed to fetch members');
   }
 
-  return (data || []).map(transformMember);
+  return (data ?? []).map(transformMember);
 }
 
 /**
@@ -115,7 +115,7 @@ export async function getActiveMembers(): Promise<Member[]> {
   const { data, error } = await supabase
     .from('members')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .order('name', { ascending: true });
 
   if (error) {
@@ -123,7 +123,7 @@ export async function getActiveMembers(): Promise<Member[]> {
     throw new Error('Failed to fetch active members');
   }
 
-  return (data || []).map(transformMember);
+  return (data ?? []).map(transformMember);
 }
 
 /**
@@ -134,7 +134,7 @@ export async function getMembersByDivision(division: string): Promise<Member[]> 
     .from('members')
     .select('*')
     .eq('division', division)
-    .eq('is_active', true)
+    .eq('status', 'active')
     .order('name', { ascending: true });
 
   if (error) {
@@ -142,7 +142,7 @@ export async function getMembersByDivision(division: string): Promise<Member[]> 
     throw new Error('Failed to fetch members by division');
   }
 
-  return (data || []).map(transformMember);
+  return (data ?? []).map(transformMember);
 }
 
 /**
@@ -153,7 +153,7 @@ export async function getMembersByBatch(batch: string): Promise<Member[]> {
     .from('members')
     .select('*')
     .eq('batch', batch)
-    .eq('is_active', true)
+    .eq('status', 'active')
     .order('name', { ascending: true });
 
   if (error) {
@@ -161,7 +161,7 @@ export async function getMembersByBatch(batch: string): Promise<Member[]> {
     throw new Error('Failed to fetch members by batch');
   }
 
-  return (data || []).map(transformMember);
+  return (data ?? []).map(transformMember);
 }
 
 /**
