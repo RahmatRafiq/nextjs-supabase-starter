@@ -519,18 +519,18 @@ ON CONFLICT (nim) DO NOTHING;
 -- =============================================
 
 INSERT INTO public.leadership (name, position, division, photo, email, phone, nim, batch, bio, social_media, period_start, period_end, "order") VALUES
-('Zaky Ramadhan', 'ketua', NULL, 'https://i.pravatar.cc/200?img=8', 'ketua@pharmacy.ac.id', '+6281234567890', '2022015', '2022', 'Ketua himpunan periode ini', '{"instagram":"@zaky"}'::jsonb, '2025-01-01', '2025-12-31', 1),
-('Nurul Izzah', 'wakil-ketua', NULL, 'https://i.pravatar.cc/200?img=23', 'wakil@pharmacy.ac.id', '+6281234567891', '2022016', '2022', 'Wakil ketua', '{"instagram":"@nurul"}'::jsonb, '2025-01-01', '2025-12-31', 2),
-('Firdaus', 'sekretaris', NULL, 'https://i.pravatar.cc/200?img=15', 'sekretaris@pharmacy.ac.id', '+6281234567892', '2022017', '2022', 'Sekretaris', '{"instagram":"@firdaus"}'::jsonb, '2025-01-01', '2025-12-31', 3),
-('Rahma', 'bendahara', NULL, 'https://i.pravatar.cc/200?img=26', 'bendahara@pharmacy.ac.id', '+6281234567893', '2022018', '2022', 'Bendahara', '{"instagram":"@rahma"}'::jsonb, '2025-01-01', '2025-12-31', 4),
-('Maulana', 'coordinator', 'academic', 'https://i.pravatar.cc/200?img=31', 'academic@pharmacy.ac.id', NULL, '2023019', '2023', 'Koordinator akademik', NULL, '2025-01-01', '2025-12-31', 5),
-('Azzahra', 'coordinator', 'internal-affairs', 'https://i.pravatar.cc/200?img=47', 'internal@pharmacy.ac.id', NULL, '2023020', '2023', 'Koordinator internal', NULL, '2025-01-01', '2025-12-31', 6),
-('Hartono', 'coordinator', 'external-affairs', 'https://i.pravatar.cc/200?img=11', 'external@pharmacy.ac.id', NULL, '2023021', '2023', 'Koordinator eksternal', NULL, '2025-01-01', '2025-12-31', 7),
-('Sartika', 'coordinator', 'student-development', 'https://i.pravatar.cc/200?img=38', 'pengembangan@pharmacy.ac.id', NULL, '2023022', '2023', 'Pengembangan mahasiswa', NULL, '2025-01-01', '2025-12-31', 8),
-('Budiman', 'coordinator', 'entrepreneurship', 'https://i.pravatar.cc/200?img=14', 'kewirausahaan@pharmacy.ac.id', NULL, '2023023', '2023', 'Koordinator kewirausahaan', NULL, '2025-01-01', '2025-12-31', 9),
-('Cahaya', 'coordinator', 'media-information', 'https://i.pravatar.cc/200?img=41', 'media@pharmacy.ac.id', NULL, '2023024', '2023', 'Koordinator media', NULL, '2025-01-01', '2025-12-31', 10),
-('Hakim', 'coordinator', 'sports-arts', 'https://i.pravatar.cc/200?img=17', 'olahraga@pharmacy.ac.id', NULL, '2023025', '2023', 'Koordinator olahraga & seni', NULL, '2025-01-01', '2025-12-31', 11),
-('Putri', 'coordinator', 'islamic-spirituality', 'https://i.pravatar.cc/200?img=44', 'kerohanian@pharmacy.ac.id', NULL, '2023026', '2023', 'Koordinator kerohanian', NULL, '2025-01-01', '2025-12-31', 12)
+('Zaky Ramadhan', 'ketua', NULL, 'https://i.pravatar.cc/200?img=8', 'ketua@pharmacy.ac.id', '+6281234567890', '2022015', '2022', 'Ketua himpunan periode ini', '{"instagram":"@zaky"}'::jsonb, '2026-01-01', '2026-12-31', 1),
+('Nurul Izzah', 'wakil-ketua', NULL, 'https://i.pravatar.cc/200?img=23', 'wakil@pharmacy.ac.id', '+6281234567891', '2022016', '2022', 'Wakil ketua', '{"instagram":"@nurul"}'::jsonb, '2026-01-01', '2026-12-31', 2),
+('Firdaus', 'sekretaris', NULL, 'https://i.pravatar.cc/200?img=15', 'sekretaris@pharmacy.ac.id', '+6281234567892', '2022017', '2022', 'Sekretaris', '{"instagram":"@firdaus"}'::jsonb, '2026-01-01', '2026-12-31', 3),
+('Rahma', 'bendahara', NULL, 'https://i.pravatar.cc/200?img=26', 'bendahara@pharmacy.ac.id', '+6281234567893', '2022018', '2022', 'Bendahara', '{"instagram":"@rahma"}'::jsonb, '2026-01-01', '2026-12-31', 4),
+('Maulana', 'coordinator', 'academic', 'https://i.pravatar.cc/200?img=31', 'academic@pharmacy.ac.id', NULL, '2023019', '2023', 'Koordinator akademik', NULL, '2026-01-01', '2026-12-31', 5),
+('Azzahra', 'coordinator', 'internal-affairs', 'https://i.pravatar.cc/200?img=47', 'internal@pharmacy.ac.id', NULL, '2023020', '2023', 'Koordinator internal', NULL, '2026-01-01', '2026-12-31', 6),
+('Hartono', 'coordinator', 'external-affairs', 'https://i.pravatar.cc/200?img=11', 'external@pharmacy.ac.id', NULL, '2023021', '2023', 'Koordinator eksternal', NULL, '2026-01-01', '2026-12-31', 7),
+('Sartika', 'coordinator', 'student-development', 'https://i.pravatar.cc/200?img=38', 'pengembangan@pharmacy.ac.id', NULL, '2023022', '2023', 'Pengembangan mahasiswa', NULL, '2026-01-01', '2026-12-31', 8),
+('Budiman', 'coordinator', 'entrepreneurship', 'https://i.pravatar.cc/200?img=14', 'kewirausahaan@pharmacy.ac.id', NULL, '2023023', '2023', 'Koordinator kewirausahaan', NULL, '2026-01-01', '2026-12-31', 9),
+('Cahaya', 'coordinator', 'media-information', 'https://i.pravatar.cc/200?img=41', 'media@pharmacy.ac.id', NULL, '2023024', '2023', 'Koordinator media', NULL, '2026-01-01', '2026-12-31', 10),
+('Hakim', 'coordinator', 'sports-arts', 'https://i.pravatar.cc/200?img=17', 'olahraga@pharmacy.ac.id', NULL, '2023025', '2023', 'Koordinator olahraga & seni', NULL, '2026-01-01', '2026-12-31', 11),
+('Putri', 'coordinator', 'islamic-spirituality', 'https://i.pravatar.cc/200?img=44', 'kerohanian@pharmacy.ac.id', NULL, '2023026', '2023', 'Koordinator kerohanian', NULL, '2026-01-01', '2026-12-31', 12)
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
