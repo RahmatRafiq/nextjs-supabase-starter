@@ -32,8 +32,8 @@ Pastikan Anda sudah install:
 ### 1.1 Clone Repository
 
 ```bash
-git clone <repository-url>
-cd griyaflora_babulu
+git clone https://github.com/efisiendev/nextjs-supabase-starterkit.git
+cd nextjs-supabase-starterkit
 ```
 
 ### 1.2 Install Dependencies
@@ -299,7 +299,7 @@ Restart → test → create events via admin panel
 NEXT_PUBLIC_USE_SUPABASE_SETTINGS=true
 ```
 
-Ini untuk dynamic site settings. Jika false, menggunakan `config/site.config.ts`.
+Ini untuk dynamic site settings. Jika false, menggunakan constants dari `config/index.ts`.
 
 ### 6.7 Final .env.local
 
@@ -459,9 +459,7 @@ npm install --legacy-peer-deps
 Setelah setup selesai:
 
 1. **Customize Configuration**
-   - Edit `config/site.config.ts` - site info
-   - Edit `config/domain.config.ts` - categories, divisions
-   - Edit `config/navigation.config.ts` - menu items
+   - Edit `config/index.ts` - site info, categories, divisions, menu items
 
 2. **Add Your Own Data**
    - Create articles via admin panel
@@ -470,8 +468,8 @@ Setelah setup selesai:
    - Upload images (Supabase Storage)
 
 3. **Extend Features**
-   - Follow `docs/NEW_ENTITY.md` untuk add entity baru
-   - Read `docs/ARCHITECTURE.md` untuk understand structure
+   - Copy existing patterns (articles, events, members) untuk add entity baru
+   - Read README.md section "Tambah Entity Baru" untuk step-by-step guide
 
 4. **Deploy to Production**
    - Read README.md section "Deployment"
@@ -483,9 +481,8 @@ Setelah setup selesai:
 ## 📚 Additional Resources
 
 - **[README.md](../README.md)** - Overview & features
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Clean architecture explained
-- **[SUPABASE.md](SUPABASE.md)** - Auth, RLS, data fetching deep dive
-- **[NEW_ENTITY.md](NEW_ENTITY.md)** - Tutorial add new entity
+- **[MASTER_PLAN.md](MASTER_PLAN.md)** - Development roadmap and phases
+- **GitHub Issues** - For questions and support
 
 ---
 
