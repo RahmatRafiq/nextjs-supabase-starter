@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import { HeroSection } from '@/features/home/components/HeroSection';
-import { HOME_CONTENT } from '@/config';
+import { getHomeSettings } from '@/lib/api/settings';
 
 const FeaturesSection = dynamic(() => import('@/features/home/components/FeaturesSection').then(mod => ({ default: mod.FeaturesSection })), {
   loading: () => <div className="h-96" />,
@@ -22,15 +22,17 @@ const CTASection = dynamic(() => import('@/features/home/components/CTASection')
   loading: () => <div className="h-64" />,
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const homeContent = await getHomeSettings();
+
   return (
     <>
-      <HeroSection data={HOME_CONTENT.hero} />
-      <FeaturesSection data={HOME_CONTENT.features} />
+      <HeroSection data={homeContent.hero} />
+      <FeaturesSection data={homeContent.features} />
       <StatsSection />
       <ArticlesPreview />
       <EventsPreview />
-      <CTASection data={HOME_CONTENT.cta} />
+      <CTASection data={homeContent.cta} />
     </>
   );
 }

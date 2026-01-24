@@ -5,13 +5,15 @@
 
 import { Metadata } from 'next';
 import { AboutContent } from '@/features/about/components/AboutContent';
-import { ABOUT_CONTENT } from '@/config';
+import { getAboutSettings } from '@/lib/api/settings';
 
 export const metadata: Metadata = {
   title: 'Tentang Kami',
   description: 'About Your Organization - Learn more about our mission and vision',
 };
 
-export default function AboutPage() {
-  return <AboutContent data={ABOUT_CONTENT} />;
+export default async function AboutPage() {
+  const aboutContent = await getAboutSettings();
+
+  return <AboutContent data={aboutContent} />;
 }

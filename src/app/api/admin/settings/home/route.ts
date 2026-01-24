@@ -55,20 +55,22 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Update settings in database
-    const { error: updateError } = await supabaseAdmin
+    // Upsert settings in database (INSERT if not exists, UPDATE if exists)
+    const { error: upsertError } = await supabaseAdmin
       .from('site_settings')
-      .update({
+      .upsert({
+        key: 'home',
         content: body,
         updated_by: user.id,
         updated_at: new Date().toISOString(),
-      })
-      .eq('key', 'home');
+      }, {
+        onConflict: 'key'
+      });
 
-    if (updateError) {
-      console.error('Error updating home settings:', updateError);
+    if (upsertError) {
+      console.error('Error upserting home settings:', upsertError);
       return NextResponse.json(
-        { error: 'Failed to update home settings' },
+        { error: 'Failed to save home settings' },
         { status: 500 }
       );
     }
