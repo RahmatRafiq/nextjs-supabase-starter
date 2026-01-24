@@ -4,6 +4,19 @@
 -- =============================================
 
 -- =============================================
+-- CLEANUP: DELETE EXISTING DATA (KECUALI PROFILES)
+-- =============================================
+-- Hapus data lama agar seed fresh
+-- TIDAK menghapus profiles (user accounts)
+-- =============================================
+
+DELETE FROM public.site_settings;
+DELETE FROM public.leadership;
+DELETE FROM public.members;
+DELETE FROM public.events;
+DELETE FROM public.articles;
+
+-- =============================================
 -- 1. ARTICLES (Konten Markdown)
 -- =============================================
 
