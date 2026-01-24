@@ -6,7 +6,9 @@ import { toast } from 'sonner';
 import { Search, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Event } from '@/types/event';
-import { ITEMS_PER_PAGE, STATUS_COLORS } from '@/lib/constants/admin';
+import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
+import { StatusBadge } from '@/shared/components/StatusBadge';
+import { CategoryBadge } from '@/shared/components/CategoryBadge';
 
 interface EventListItem {
   id: string;
@@ -68,24 +70,6 @@ export default function EventsPage() {
       return canEditOwnContent(event.creator_id);
     }
     return false;
-  }
-
-  function getStatusBadge(status: string) {
-    const colorClass = STATUS_COLORS[status as keyof typeof STATUS_COLORS] || STATUS_COLORS.upcoming;
-
-    return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  }
-
-  function getCategoryBadge(category: string) {
-    return (
-      <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-        {category}
-      </span>
-    );
   }
 
   if (loading) {
@@ -180,8 +164,8 @@ export default function EventsPage() {
                         <div className="text-sm text-gray-500">{event.slug}</div>
                       </td>
                       <td className="py-3 px-4 text-gray-700">{event.organizer.name}</td>
-                      <td className="py-3 px-4">{getCategoryBadge(event.category)}</td>
-                      <td className="py-3 px-4">{getStatusBadge(event.status)}</td>
+                      <td className="py-3 px-4"><CategoryBadge category={event.category} colorClass="bg-purple-100 text-purple-800" /></td>
+                      <td className="py-3 px-4"><StatusBadge status={event.status} defaultColor="upcoming" /></td>
                       <td className="py-3 px-4 text-gray-700">
                         {new Date(event.start_date).toLocaleDateString('id-ID')}
                       </td>

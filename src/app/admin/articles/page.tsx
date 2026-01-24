@@ -7,7 +7,9 @@ import { toast } from 'sonner';
 import { Search, Plus, Edit, Trash2, Eye, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Article } from '@/types/article';
-import { ITEMS_PER_PAGE, STATUS_COLORS } from '@/lib/constants/admin';
+import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
+import { StatusBadge } from '@/shared/components/StatusBadge';
+import { CategoryBadge } from '@/shared/components/CategoryBadge';
 
 interface ArticleListItem {
   id: string;
@@ -123,24 +125,6 @@ export default function ArticlesPage() {
     return false;
   }
 
-  function getStatusBadge(status: string) {
-    const colorClass = STATUS_COLORS[status as keyof typeof STATUS_COLORS] || STATUS_COLORS.draft;
-
-    return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  }
-
-  function getCategoryBadge(category: string) {
-    return (
-      <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-        {category}
-      </span>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -232,8 +216,8 @@ export default function ArticlesPage() {
                         <div className="text-sm text-gray-500">{article.slug}</div>
                       </td>
                       <td className="py-3 px-4 text-gray-700">{article.author.name}</td>
-                      <td className="py-3 px-4">{getCategoryBadge(article.category)}</td>
-                      <td className="py-3 px-4">{getStatusBadge(article.status)}</td>
+                      <td className="py-3 px-4"><CategoryBadge category={article.category} /></td>
+                      <td className="py-3 px-4"><StatusBadge status={article.status} /></td>
                       <td className="py-3 px-4 text-gray-700">
                         {new Date(article.published_at).toLocaleDateString('id-ID')}
                       </td>

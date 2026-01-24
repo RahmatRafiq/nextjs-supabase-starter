@@ -9,7 +9,8 @@ import { toast } from 'sonner';
 import { Search, Plus, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Member } from '@/types/member';
-import { ITEMS_PER_PAGE, STATUS_COLORS } from '@/lib/constants/admin';
+import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
+import { StatusBadge } from '@/shared/components/StatusBadge';
 
 interface MemberListItem {
   id: string;
@@ -189,13 +190,7 @@ export default function MembersPage() {
                       <td className="py-3 px-4 text-gray-700">{member.email}</td>
                       <td className="py-3 px-4 text-gray-700">{member.batch}</td>
                       <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            STATUS_COLORS[member.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.active
-                          }`}
-                        >
-                          {member.status}
-                        </span>
+                        <StatusBadge status={member.status} defaultColor="active" />
                       </td>
                       <td className="py-3 px-4 text-gray-700">{member.division || '-'}</td>
                       <td className="py-3 px-4">
