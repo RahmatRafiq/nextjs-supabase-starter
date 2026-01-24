@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth, UserRole } from '@/lib/auth/AuthContext';
@@ -43,27 +43,10 @@ export default function UsersPage() {
       router.push('/admin/dashboard');
       return;
     }
+  }, [authLoading, hasPermission, router]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, profile?.id]);
-
-  // Initial fetch and refetch when filters/pagination change
-  useEffect(() => {
-    // Wait for auth to load
-    if (authLoading) return;
-
-    // Only fetch if user has permission
-    if (!hasPermission(['super_admin'])) return;
-
-    const timer = setTimeout(() => {
-      fetchUsers();
-    }, searchQuery ? 300 : 0); // Debounce only for search
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, searchQuery, roleFilter, currentPage, profile?.id]);
-
-  async function fetchUsers() {
+  // Memoize fetchUsers to prevent infinite re-renders
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -97,9 +80,24 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentPage, searchQuery, roleFilter]);
 
-  async function handleDelete(id: string, email: string) {
+  // Initial fetch and refetch when filters/pagination change
+  useEffect(() => {
+    // Wait for auth to load
+    if (authLoading) return;
+
+    // Only fetch if user has permission
+    if (!hasPermission(['super_admin'])) return;
+
+    const timer = setTimeout(() => {
+      fetchUsers();
+    }, searchQuery ? 300 : 0); // Debounce only for search
+
+    return () => clearTimeout(timer);
+  }, [authLoading, hasPermission, searchQuery, fetchUsers]);
+
+  const handleDelete = useCallback(async (id: string, email: string) => {
     if (id === profile?.id) {
       showError('You cannot delete your own account');
       return;
@@ -130,7 +128,7 @@ export default function UsersPage() {
       setTotalCount((prev) => prev + 1);
       showError(error, 'Failed to delete user');
     }
-  }
+  }, [profile?.id, users]);
 
   if (loading && users.length === 0) {
     return (

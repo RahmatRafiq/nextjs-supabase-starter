@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { toast } from 'sonner';
@@ -27,6 +28,9 @@ interface EventListItem {
 export default function EventsPage() {
   const { user, profile, hasPermission, canEditOwnContent } = useAuth();
 
+  // Memoize searchColumns to prevent infinite re-renders
+  const searchColumns = useMemo(() => ['title', 'organizer->>name'], []);
+
   // All common CRUD logic handled by hook
   const {
     items: events,
@@ -48,29 +52,29 @@ export default function EventsPage() {
     itemsPerPage: ITEMS_PER_PAGE,
     filterByAuthor: true,
     authorColumn: 'creator_id',
-    searchColumns: ['title', 'organizer->>name'],
+    searchColumns,
   });
 
-  async function handleDelete(id: string, title: string) {
+  const handleDelete = useCallback(async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
     await deleteItem(id);
-  }
+  }, [deleteItem]);
 
-  function canEditEvent(event: EventListItem): boolean {
+  const canEditEvent = useCallback((event: EventListItem): boolean => {
     if (hasPermission(['super_admin', 'admin'])) return true;
     if (profile?.role === 'kontributor' && user) {
       return canEditOwnContent(event.creator_id);
     }
     return false;
-  }
+  }, [hasPermission, profile?.role, user, canEditOwnContent]);
 
-  function canDeleteEvent(event: EventListItem): boolean {
+  const canDeleteEvent = useCallback((event: EventListItem): boolean => {
     if (hasPermission(['super_admin', 'admin'])) return true;
     if (profile?.role === 'kontributor' && user) {
       return canEditOwnContent(event.creator_id);
     }
     return false;
-  }
+  }, [hasPermission, profile?.role, user, canEditOwnContent]);
 
   if (loading) {
     return (

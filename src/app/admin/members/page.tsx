@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
@@ -37,13 +37,8 @@ export default function MembersPage() {
     }
   }, [authLoading, hasPermission, router]);
 
-  // Fetch available batches
-  useEffect(() => {
-    if (authLoading || !hasPermission(['super_admin', 'admin'])) return;
-    fetchBatches();
-  }, [authLoading, hasPermission]);
-
-  async function fetchBatches() {
+  // Fetch available batches (memoized)
+  const fetchBatches = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('members')
@@ -58,7 +53,28 @@ export default function MembersPage() {
       const message = error instanceof Error ? error.message : 'Failed to load batches';
       toast.error(message);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (authLoading || !hasPermission(['super_admin', 'admin'])) return;
+    fetchBatches();
+  }, [authLoading, hasPermission, fetchBatches]);
+
+  // Memoize searchColumns to prevent infinite re-renders
+  const searchColumns = useMemo(() => ['name', 'nim', 'email'], []);
+
+  // Memoize customFilter to prevent infinite re-renders
+  const customFilter = useCallback((query: any, filters: Record<string, string>) => {
+    // Apply custom batch filter
+    if (batchFilter !== 'all') {
+      query = query.eq('batch', batchFilter);
+    }
+    // Apply status filter
+    if (filters.status && filters.status !== 'all') {
+      query = query.eq('status', filters.status);
+    }
+    return query;
+  }, [batchFilter]);
 
   // All common CRUD logic handled by hook
   const {
@@ -80,24 +96,14 @@ export default function MembersPage() {
     sortAscending: true,
     itemsPerPage: ITEMS_PER_PAGE,
     filterByAuthor: false,
-    searchColumns: ['name', 'nim', 'email'],
-    customFilter: (query, filters) => {
-      // Apply custom batch filter
-      if (batchFilter !== 'all') {
-        query = query.eq('batch', batchFilter);
-      }
-      // Apply status filter
-      if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
-      }
-      return query;
-    },
+    searchColumns,
+    customFilter,
   });
 
-  async function handleDelete(id: string, name: string) {
+  const handleDelete = useCallback(async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
     await deleteItem(id);
-  }
+  }, [deleteItem]);
 
   if (loading || authLoading) {
     return (

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import Link from 'next/link';
@@ -27,6 +28,9 @@ const DIVISION_LABELS: Record<string, string> = {
 };
 
 export default function LeadershipPage() {
+  // Memoize searchColumns to prevent infinite re-renders
+  const searchColumns = useMemo(() => ['name', 'position', 'email'], []);
+
   const {
     items: leaders,
     loading,
@@ -43,13 +47,13 @@ export default function LeadershipPage() {
     sortColumn: 'order',
     sortAscending: true,
     itemsPerPage: ITEMS_PER_PAGE,
-    searchColumns: ['name', 'position', 'email'],
+    searchColumns,
   });
 
-  async function handleDelete(id: string, name: string) {
+  const handleDelete = useCallback(async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
     await deleteItem(id);
-  }
+  }, [deleteItem]);
 
   if (loading) {
     return (
