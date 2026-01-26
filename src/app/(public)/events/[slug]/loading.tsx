@@ -1,4 +1,4 @@
-import { EventDetailSkeleton } from '@/components/ui/PageSkeletons';
+import { EventDetailSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function EventDetailLoading() {
   return (

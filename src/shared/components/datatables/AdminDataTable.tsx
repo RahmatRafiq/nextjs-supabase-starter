@@ -37,8 +37,7 @@ export function AdminDataTable({
         accessorFn: hasNestedPath
           ? (row) => {
               const keys = col.data.split('.');
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              return keys.reduce((obj, key) => (obj as any)?.[key], row);
+              return keys.reduce((obj, key) => (obj as Record<string, unknown>)?.[key], row);
             }
           : undefined,
         accessorKey: hasNestedPath ? undefined : col.data,

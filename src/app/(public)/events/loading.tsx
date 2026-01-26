@@ -1,4 +1,4 @@
-import { HeroSkeleton, EventGridSkeleton } from '@/components/ui/PageSkeletons';
+import { HeroSkeleton, EventGridSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function EventsLoading() {
   return (

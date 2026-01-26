@@ -1,4 +1,4 @@
-import { ArticleDetailSkeleton } from '@/components/ui/PageSkeletons';
+import { ArticleDetailSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function ArticleDetailLoading() {
   return (

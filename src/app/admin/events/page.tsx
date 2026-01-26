@@ -3,13 +3,13 @@
 import { useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { toast } from 'sonner';
 import { Search, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Event } from '@/types/event';
 import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { CategoryBadge } from '@/shared/components/CategoryBadge';
+import { AdminListTable, AdminListTableColumn } from '@/shared/components/admin/AdminListTable';
 
 interface EventListItem {
   id: string;
@@ -76,13 +76,80 @@ export default function EventsPage() {
     return false;
   }, [hasPermission, profile?.role, user, canEditOwnContent]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-      </div>
-    );
-  }
+  // Define table columns
+  const columns = useMemo<AdminListTableColumn<EventListItem>[]>(() => [
+    {
+      key: 'title',
+      header: 'Title',
+      render: (event) => (
+        <div>
+          <div className="font-medium text-gray-900">{event.title}</div>
+          <div className="text-sm text-gray-500">{event.slug}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'organizer',
+      header: 'Organizer',
+      render: (event) => <span className="text-gray-700">{event.organizer.name}</span>,
+    },
+    {
+      key: 'category',
+      header: 'Category',
+      render: (event) => <CategoryBadge category={event.category} colorClass="bg-purple-100 text-purple-800" />,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (event) => <StatusBadge status={event.status} defaultColor="upcoming" />,
+    },
+    {
+      key: 'date',
+      header: 'Date',
+      render: (event) => (
+        <span className="text-gray-700">
+          {new Date(event.start_date).toLocaleDateString('id-ID')}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      className: 'text-right',
+      render: (event) => (
+        <div className="flex items-center justify-end gap-2">
+          <Link
+            href={`/events/${event.slug}`}
+            target="_blank"
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="View"
+          >
+            <Eye className="w-4 h-4" />
+          </Link>
+
+          {canEditEvent(event) && (
+            <Link
+              href={`/admin/events/${event.id}`}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </Link>
+          )}
+
+          {canDeleteEvent(event) && (
+            <button
+              onClick={() => handleDelete(event.id, event.title)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ], [canEditEvent, canDeleteEvent, handleDelete]);
 
   return (
     <div className="space-y-6">
@@ -142,105 +209,20 @@ export default function EventsPage() {
           </select>
         </div>
 
-        {events.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No events found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Title</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Organizer</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Date</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {events.map((event) => (
-                    <tr key={event.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-gray-900">{event.title}</div>
-                        <div className="text-sm text-gray-500">{event.slug}</div>
-                      </td>
-                      <td className="py-3 px-4 text-gray-700">{event.organizer.name}</td>
-                      <td className="py-3 px-4"><CategoryBadge category={event.category} colorClass="bg-purple-100 text-purple-800" /></td>
-                      <td className="py-3 px-4"><StatusBadge status={event.status} defaultColor="upcoming" /></td>
-                      <td className="py-3 px-4 text-gray-700">
-                        {new Date(event.start_date).toLocaleDateString('id-ID')}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/events/${event.slug}`}
-                            target="_blank"
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="View"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Link>
-
-                          {canEditEvent(event) && (
-                            <Link
-                              href={`/admin/events/${event.id}`}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="Edit"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Link>
-                          )}
-
-                          {canDeleteEvent(event) && (
-                            <button
-                              onClick={() => handleDelete(event.id, event.title)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            {totalCount > ITEMS_PER_PAGE && (
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                  {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} events
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <span className="px-4 py-2 text-sm text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+        {/* Table */}
+        <AdminListTable
+          columns={columns}
+          data={events}
+          loading={loading}
+          pagination={{
+            currentPage,
+            totalPages,
+            totalCount,
+            itemsPerPage: ITEMS_PER_PAGE,
+            onPageChange: setCurrentPage,
+          }}
+          emptyMessage="No events found"
+        />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { Search, Plus, Edit, Trash2, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { User } from '@/types';
 import { showError, showSuccess, handleApiError } from '@/lib/utils/error-handler';
-import { TableSkeleton } from '@/components/ui/Skeleton';
+import { TableSkeleton } from '@/shared/components/ui/Skeleton';
 
 const ROLE_LABELS: Record<UserRole, string> = {
   super_admin: 'Super Admin',

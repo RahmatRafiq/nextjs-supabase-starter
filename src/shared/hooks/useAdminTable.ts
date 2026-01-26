@@ -21,7 +21,7 @@ interface QueryBuilder {
   eq(column: string, value: string): this;
 }
 
-interface UseAdminTableOptions<T> {
+interface UseAdminTableOptions {
   /** Table name in Supabase */
   tableName: string;
   /** Columns to select (e.g., 'id, title, slug, status') */
@@ -65,7 +65,7 @@ interface UseAdminTableResult<T> {
 }
 
 export function useAdminTable<T extends { id: string }>(
-  options: UseAdminTableOptions<T>
+  options: UseAdminTableOptions
 ): UseAdminTableResult<T> {
   const {
     tableName,

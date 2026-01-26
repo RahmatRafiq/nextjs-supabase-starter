@@ -1,6 +1,6 @@
 'use client';
 
-import { ErrorState } from '@/components/ui/ErrorState';
+import { ErrorState } from '@/shared/components/ui/ErrorState';
 
 export default function LeadershipError({
   error,
