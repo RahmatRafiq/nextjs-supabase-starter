@@ -72,34 +72,34 @@ export default function LeadershipFormPage() {
         socialMedia.twitter = data.social_media_twitter;
       }
 
+      // Placeholder SVG data URL untuk foto kosong (karena photo field adalah NOT NULL di database)
+      const photoPlaceholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23f3f4f6" width="100" height="100"/%3E%3C/svg%3E';
+
+      // Default period untuk field NOT NULL
+      const currentYear = new Date().getFullYear().toString();
+
       return {
         name: data.name,
         position: data.position,
-        division: data.division,
-        photo: data.photo || '',
+        division: data.division || null,
+        photo: data.photo && data.photo.trim() !== '' ? data.photo : photoPlaceholder,
         email: data.email || null,
         phone: data.phone || null,
         nim: data.nim || null,
         batch: data.batch || null,
         bio: data.bio || null,
         social_media: Object.keys(socialMedia).length > 0 ? socialMedia : null,
-        period_start: data.period_start || null,
-        period_end: data.period_end || null,
+        period_start: data.period_start || currentYear,
+        period_end: data.period_end || currentYear,
         order: data.order,
       };
     },
   });
 
   const handleNameChange = (value: string) => {
-    const isPhotoEmptyOrAuto = !formData.photo || formData.photo.includes('ui-avatars.com');
-    const newPhoto = isPhotoEmptyOrAuto && value.trim()
-      ? `https://ui-avatars.com/api/?name=${encodeURIComponent(value)}&background=random&format=svg`
-      : formData.photo;
-
     setFormData({
       ...formData,
       name: value,
-      photo: newPhoto || '',
     });
   };
 
