@@ -76,7 +76,7 @@ export default function LeadershipFormPage() {
         name: data.name,
         position: data.position,
         division: data.division,
-        photo: data.photo || null,
+        photo: data.photo || '',
         email: data.email || null,
         phone: data.phone || null,
         nim: data.nim || null,
