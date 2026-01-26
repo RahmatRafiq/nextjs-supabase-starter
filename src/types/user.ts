@@ -3,7 +3,7 @@
  * Used in admin panel and public pages
  */
 
-import { UserRole } from '@/lib/auth/AuthContext';
+import { UserRole } from '@/types/auth-definitions';
 
 export interface User {
   id: string;
