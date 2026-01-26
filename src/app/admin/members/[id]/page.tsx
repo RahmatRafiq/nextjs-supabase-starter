@@ -79,10 +79,10 @@ export default function MemberFormPage() {
         graduated_at: data.graduated_at || null,
         bio: data.bio || null,
         interests: data.interests
-          ? data.interests.split(',').map((i) => i.trim())
+          ? (typeof data.interests === 'string' ? data.interests.split(',') : data.interests).map((i: string) => i.trim())
           : null,
         achievements: data.achievements
-          ? data.achievements.split(',').map((a) => a.trim())
+          ? (typeof data.achievements === 'string' ? data.achievements.split(',') : data.achievements).map((a: string) => a.trim())
           : null,
         social_media: Object.keys(socialMedia).length > 0 ? socialMedia : null,
       };
