@@ -6,8 +6,9 @@ import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { AdminDataTable } from '@/shared/components/datatables/AdminDataTable';
 import { Member } from '@/types/member';
 import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
 import { StatusBadge } from '@/shared/components/StatusBadge';
@@ -110,7 +111,77 @@ export default function MembersPage() {
     await deleteItem(id);
   }, [deleteItem]);
 
-  if (loading || authLoading) {
+  // Table Configuration
+  const tableConfig = useMemo(() => ({
+    tableName: 'members',
+    columns: [
+      {
+        data: 'name',
+        title: 'Name',
+        sortable: true,
+        responsivePriority: 1,
+        className: 'font-medium text-gray-900',
+      },
+      {
+        data: 'nim',
+        title: 'NIM',
+        sortable: true,
+        responsivePriority: 2,
+      },
+      {
+        data: 'email',
+        title: 'Email',
+        sortable: true,
+      },
+      {
+        data: 'batch',
+        title: 'Batch',
+        sortable: true,
+      },
+      {
+        data: 'status',
+        title: 'Status',
+        sortable: true,
+        render: (val: unknown) => <StatusBadge status={val as Member['status']} defaultColor="active" />,
+      },
+      {
+        data: 'division',
+        title: 'Division',
+        sortable: true,
+        render: (val: unknown) => val ? String(val) : '-',
+      },
+      {
+        data: 'id', // Using ID for actions column
+        title: 'Actions',
+        sortable: false,
+        className: 'text-right',
+        render: (id: unknown, _: string, row: Record<string, unknown>) => (
+          <div className="flex items-center justify-end gap-2">
+            <Link
+              href={`/admin/members/${id}`}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={() => handleDelete(id as string, row.name as string)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        ),
+      },
+    ],
+    pageLength: ITEMS_PER_PAGE,
+    search: {
+      placeholder: 'Search by name, NIM, or email...',
+    },
+  }), [handleDelete]);
+
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
@@ -134,131 +205,46 @@ export default function MembersPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by name, NIM, or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
+      <AdminDataTable
+        config={tableConfig}
+        data={members}
+        isLoading={loading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filters={
+          <div className="flex flex-col md:flex-row gap-4">
+            <select
+              value={filters.status || 'all'}
+              onChange={(e) => setFilter('status', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="alumni">Alumni</option>
+            </select>
+
+            <select
+              value={batchFilter}
+              onChange={(e) => setBatchFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">All Batches</option>
+              {batches.map((batch) => (
+                <option key={batch} value={batch}>
+                  Batch {batch}
+                </option>
+              ))}
+            </select>
           </div>
-
-          <select
-            value={filters.status || 'all'}
-            onChange={(e) => setFilter('status', e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="alumni">Alumni</option>
-          </select>
-
-          <select
-            value={batchFilter}
-            onChange={(e) => setBatchFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="all">All Batches</option>
-            {batches.map((batch) => (
-              <option key={batch} value={batch}>
-                Batch {batch}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {members.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No members found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">NIM</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Batch</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Division</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((member) => (
-                    <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium text-gray-900">{member.name}</td>
-                      <td className="py-3 px-4 text-gray-700">{member.nim}</td>
-                      <td className="py-3 px-4 text-gray-700">{member.email}</td>
-                      <td className="py-3 px-4 text-gray-700">{member.batch}</td>
-                      <td className="py-3 px-4">
-                        <StatusBadge status={member.status} defaultColor="active" />
-                      </td>
-                      <td className="py-3 px-4 text-gray-700">{member.division || '-'}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/admin/members/${member.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(member.id, member.name)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            {totalCount > ITEMS_PER_PAGE && (
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                  {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} members
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <span className="px-4 py-2 text-sm text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+        }
+        manualPagination={{
+          currentPage,
+          pageCount: totalPages,
+          totalRecords: totalCount,
+          onPageChange: setCurrentPage,
+        }}
+      />
     </div>
   );
 }

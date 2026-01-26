@@ -34,6 +34,12 @@ export default function ArticlesPage() {
   const {
     items: articles,
     loading,
+    totalCount,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    searchQuery,
+    setSearchQuery,
     filters,
     setFilter,
     refetch,
@@ -143,47 +149,9 @@ export default function ArticlesPage() {
     onDelete: handleDelete,
   }), [canEditArticle, canDeleteArticle, canPublishArticles, handlePublish, handleUnpublish, handleDelete]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
-      {/* Custom filters outside DataTables */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <select
-            value={filters.status ?? 'all'}
-            onChange={(e) => setFilter('status', e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="pending">Pending</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
-          </select>
-
-          <select
-            value={filters.category ?? 'all'}
-            onChange={(e) => setFilter('category', e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="all">All Categories</option>
-            <option value="post">Post</option>
-            <option value="blog">Blog</option>
-            <option value="opinion">Opinion</option>
-            <option value="publication">Publication</option>
-            <option value="info">Info</option>
-          </select>
-        </div>
-      </div>
-
-      {/* DataTable */}
       <AdminDataTable
         config={tableConfig}
         data={articles}
@@ -194,6 +162,43 @@ export default function ArticlesPage() {
         header={{
           title: 'Articles',
           description: 'Manage articles and publications',
+        }}
+        isLoading={loading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filters={
+          <div className="flex flex-col md:flex-row gap-4">
+            <select
+              value={filters.status ?? 'all'}
+              onChange={(e) => setFilter('status', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="draft">Draft</option>
+              <option value="pending">Pending</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+
+            <select
+              value={filters.category ?? 'all'}
+              onChange={(e) => setFilter('category', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">All Categories</option>
+              <option value="post">Post</option>
+              <option value="blog">Blog</option>
+              <option value="opinion">Opinion</option>
+              <option value="publication">Publication</option>
+              <option value="info">Info</option>
+            </select>
+          </div>
+        }
+        manualPagination={{
+          currentPage,
+          pageCount: totalPages,
+          totalRecords: totalCount,
+          onPageChange: setCurrentPage,
         }}
       />
     </div>

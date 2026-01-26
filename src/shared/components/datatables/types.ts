@@ -101,4 +101,22 @@ export interface AdminDataTableProps {
     title: string;
     description: string;
   };
+
+  /** Optional: Loading state */
+  isLoading?: boolean;
+
+  /** Optional: Manual pagination (for server-side) */
+  manualPagination?: {
+    pageCount: number;
+    currentPage: number;
+    totalRecords: number;
+    onPageChange: (page: number) => void;
+  };
+
+  /** Optional: Controlled search state */
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+
+  /** Optional: Filters to display alongside search */
+  filters?: ReactNode;
 }

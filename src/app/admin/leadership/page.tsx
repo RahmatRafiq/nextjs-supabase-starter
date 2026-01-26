@@ -2,10 +2,11 @@
 
 import { useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
-import { Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { Leadership } from '@/types/leadership';
 import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
+import { AdminDataTable } from '@/shared/components/datatables/AdminDataTable';
 
 const POSITION_LABELS: Record<string, string> = {
   'ketua': 'Ketua',
@@ -55,12 +56,98 @@ export default function LeadershipPage() {
     await deleteItem(id);
   }, [deleteItem]);
 
+  // Table Configuration
+  const tableConfig = useMemo(() => ({
+    tableName: 'leadership',
+    columns: [
+      {
+        data: 'order',
+        title: 'Order',
+        sortable: true,
+        responsivePriority: 2,
+        className: 'text-gray-700',
+      },
+      {
+        data: 'name',
+        title: 'Name',
+        sortable: true,
+        responsivePriority: 1,
+        render: (_: unknown, __: string, row: any) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={row.photo}
+              alt={row.name}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <div>
+              <div className="font-medium text-gray-900">{row.name}</div>
+              {row.email && (
+                <div className="text-sm text-gray-500">{row.email}</div>
+              )}
+            </div>
+          </div>
+        ),
+      },
+      {
+        data: 'position',
+        title: 'Position',
+        sortable: true,
+        render: (val: unknown) => <span className="text-gray-700">{POSITION_LABELS[String(val)] || String(val)}</span>,
+      },
+      {
+        data: 'division',
+        title: 'Division',
+        sortable: true,
+        render: (val: unknown) => <span className="text-gray-700">{val ? DIVISION_LABELS[String(val)] || String(val) : '-'}</span>,
+      },
+      {
+        data: 'period_start', // Using period_start as key
+        title: 'Period',
+        sortable: true,
+        render: (_: unknown, __: string, row: any) => (
+          <div className="flex items-center gap-1 text-sm text-gray-700">
+            <Calendar className="w-4 h-4" />
+            {new Date(row.period_start).getFullYear()} - {new Date(row.period_end).getFullYear()}
+          </div>
+        ),
+      },
+      {
+        data: 'id',
+        title: 'Actions',
+        sortable: false,
+        className: 'text-right',
+        render: (id: unknown, _: string, row: any) => (
+          <div className="flex items-center justify-end gap-2">
+            <Link
+              href={`/admin/leadership/${id}`}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={() => handleDelete(id as string, row.name)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        ),
+      },
+    ],
+    pageLength: ITEMS_PER_PAGE,
+    search: {
+      placeholder: 'Search by name, position, or email...',
+    },
+  }), [handleDelete]);
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-      </div>
-    );
+    // We let AdminDataTable handle loading state if we want, but if we want full page replacement during initial load:
+    // Actually, AdminDataTable rendering Skeleton is better.
+    // So removing this block if AdminDataTable handles it nicely.
+    // However, the surrounding layout (Add button etc) is nice to see.
+    // So I will remove this block and let AdminDataTable show skeleton.
   }
 
   return (
@@ -79,126 +166,19 @@ export default function LeadershipPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by name, position, or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {leaders.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No leaders found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Order</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Position</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Division</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Period</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaders.map((leader) => (
-                    <tr key={leader.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 text-gray-700">{leader.order}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={leader.photo}
-                            alt={leader.name}
-                            className="w-10 h-10 rounded-full object-cover"
-                          />
-                          <div>
-                            <div className="font-medium text-gray-900">{leader.name}</div>
-                            {leader.email && (
-                              <div className="text-sm text-gray-500">{leader.email}</div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-gray-700">
-                        {POSITION_LABELS[leader.position] || leader.position}
-                      </td>
-                      <td className="py-3 px-4 text-gray-700">
-                        {leader.division ? DIVISION_LABELS[leader.division] || leader.division : '-'}
-                      </td>
-                      <td className="py-3 px-4 text-gray-700">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(leader.period_start).getFullYear()} - {new Date(leader.period_end).getFullYear()}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/admin/leadership/${leader.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(leader.id, leader.name)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            {totalCount > ITEMS_PER_PAGE && (
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                  {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} leaders
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <span className="px-4 py-2 text-sm text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      <AdminDataTable
+        config={tableConfig}
+        data={leaders}
+        isLoading={loading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        manualPagination={{
+          currentPage,
+          pageCount: totalPages,
+          totalRecords: totalCount,
+          onPageChange: setCurrentPage,
+        }}
+      />
     </div>
   );
 }
