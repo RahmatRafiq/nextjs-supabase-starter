@@ -1,4 +1,4 @@
-import { HeroSkeleton, MemberGridSkeleton } from '@/components/ui/PageSkeletons';
+import { HeroSkeleton, MemberGridSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function MembersLoading() {
   return (

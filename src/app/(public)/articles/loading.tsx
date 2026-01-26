@@ -1,4 +1,4 @@
-import { HeroSkeleton, ArticleGridSkeleton } from '@/components/ui/PageSkeletons';
+import { HeroSkeleton, ArticleGridSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function ArticlesLoading() {
   return (

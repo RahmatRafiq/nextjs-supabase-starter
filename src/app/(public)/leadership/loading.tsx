@@ -1,4 +1,4 @@
-import { LeadershipGridSkeleton } from '@/components/ui/PageSkeletons';
+import { LeadershipGridSkeleton } from '@/shared/components/ui/PageSkeletons';
 
 export default function LeadershipLoading() {
   return (
