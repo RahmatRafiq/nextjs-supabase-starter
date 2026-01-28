@@ -107,12 +107,13 @@ export default async function ArticleDetailPage({ params }: Props) {
             </div>
 
             {/* Cover Image */}
-            <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-8 bg-gray-100 border border-gray-200">
               <Image
                 src={article.coverImage}
                 alt={article.title}
                 fill
-                className="object-cover"
+                sizes="(max-width: 1200px) 100vw, 1200px"
+                className="object-contain"
                 priority
               />
             </div>
@@ -161,6 +162,7 @@ export default async function ArticleDetailPage({ params }: Props) {
                         src={related.coverImage}
                         alt={related.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>

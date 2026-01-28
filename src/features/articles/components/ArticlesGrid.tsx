@@ -42,19 +42,17 @@ export function ArticlesGrid({ articles }: ArticlesGridProps) {
               y: -12,
               transition: { duration: 0.3 },
             }}
-            className={`group relative ${
-              isFeatured
+            className={`group relative ${isFeatured
                 ? 'md:col-span-8 md:row-span-2'
                 : isLarge
-                ? 'md:col-span-7'
-                : 'md:col-span-5'
-            }`}
+                  ? 'md:col-span-7'
+                  : 'md:col-span-5'
+              }`}
           >
             <Link href={`/articles/${article.slug}`} className="block">
               {/* Image with overlay - no card container */}
-              <div className={`relative overflow-hidden rounded-3xl ${
-                isFeatured ? 'aspect-[4/5]' : 'aspect-[16/10]'
-              }`}>
+              <div className={`relative overflow-hidden rounded-3xl ${isFeatured ? 'aspect-[4/5]' : 'aspect-[16/10]'
+                }`}>
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.6 }}
@@ -64,6 +62,7 @@ export function ArticlesGrid({ articles }: ArticlesGridProps) {
                     src={article.coverImage}
                     alt={article.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
                   />
                 </motion.div>
@@ -120,13 +119,12 @@ export function ArticlesGrid({ articles }: ArticlesGridProps) {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.4 }}
-                    className={`font-bold text-white mb-3 line-clamp-2 ${
-                      isFeatured
+                    className={`font-bold text-white mb-3 line-clamp-2 ${isFeatured
                         ? 'text-3xl md:text-4xl'
                         : isLarge
-                        ? 'text-2xl md:text-3xl'
-                        : 'text-xl md:text-2xl'
-                    }`}
+                          ? 'text-2xl md:text-3xl'
+                          : 'text-xl md:text-2xl'
+                      }`}
                   >
                     {article.title}
                   </motion.h2>

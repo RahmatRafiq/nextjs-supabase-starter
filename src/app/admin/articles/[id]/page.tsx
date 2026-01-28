@@ -1,5 +1,5 @@
 'use client';
-
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useAdminForm } from '@/shared/hooks/useAdminForm';
 import { RichTextEditor } from '@/shared/components/RichTextEditor';
@@ -10,6 +10,8 @@ import { FormCheckbox } from '@/shared/components/FormCheckbox';
 import { FormActions } from '@/shared/components/FormActions';
 import { FormField } from '@/shared/components/FormField';
 import { CreateableSelect } from '@/shared/components/ui/CreateableSelect';
+import { FileUpload } from '@/shared/components/ui/FileUpload';
+import { StorageService } from '@/lib/storage/storage.service';
 import { generateSlug } from '@/lib/utils/slug';
 import { ArticleFormData } from '@/types/forms';
 
@@ -24,6 +26,7 @@ const CATEGORIES = [
 export default function ArticlePage() {
   const params = useParams();
   const id = params.id as string;
+  const [initialCoverImage, setInitialCoverImage] = useState<string | null>(null);
 
   const {
     formData,
@@ -49,11 +52,27 @@ export default function ArticlePage() {
       status: 'draft',
     },
     redirectPath: '/admin/articles',
-    onBeforeSave: (data) => {
-      // Convert tags string to array
+    onBeforeSave: async (data) => {
+      // Cleanup old image if changed
+      if (initialCoverImage && data.cover_image && data.cover_image !== initialCoverImage) {
+        try {
+          await StorageService.deleteFile(initialCoverImage);
+        } catch (error) {
+          console.error('Failed to delete old image:', error);
+          // Continue saving even if deletion fails
+        }
+      }
+
+      let formattedTags: string[] = [];
+      if (Array.isArray(data.tags)) {
+        formattedTags = data.tags;
+      } else if (typeof data.tags === 'string') {
+        formattedTags = data.tags ? (data.tags as string).split(',').map((t: string) => t.trim()) : [];
+      }
+
       return {
         ...data,
-        tags: data.tags ? data.tags.split(',').map((t) => t.trim()) : [],
+        tags: formattedTags,
         author: {
           name: data.title,
           email: '',
@@ -70,6 +89,13 @@ export default function ArticlePage() {
       slug: generateSlug(value),
     });
   }
+
+  // Capture initial cover image when data is loaded
+  useEffect(() => {
+    if (!fetching && !isCreateMode && formData.cover_image && initialCoverImage === null) {
+      setInitialCoverImage(formData.cover_image);
+    }
+  }, [fetching, isCreateMode, formData.cover_image, initialCoverImage]);
 
   if (fetching) {
     return (
@@ -119,14 +145,15 @@ export default function ArticlePage() {
               required
             />
 
-            <FormInput
-              label="Cover Image URL"
-              id="cover_image"
-              type="url"
+            <FileUpload
+              label="Cover Image"
               value={formData.cover_image || ''}
-              onChange={(value) => updateField('cover_image', value)}
-              required
-              placeholder="https://example.com/image.jpg"
+              onChange={(url) => updateField('cover_image', url)}
+              onUpload={(file) => StorageService.uploadFile(file, 'articles').then(res => {
+                if (res.error) throw res.error;
+                return res.url!;
+              })}
+              accept="image/*"
             />
           </div>
 
