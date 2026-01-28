@@ -6,7 +6,9 @@ import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
+import { Modal } from '@/shared/components/ui/Modal';
+import { Select } from '@/shared/components/ui/Select';
 import Link from 'next/link';
 import { AdminDataTable } from '@/shared/components/datatables/AdminDataTable';
 import { Member } from '@/types/member';
@@ -34,6 +36,25 @@ export default function MembersPage() {
   const { hasPermission, loading: authLoading } = useAuth();
   const [batches, setBatches] = useState<string[]>([]);
   const [batchFilter, setBatchFilter] = useState<string>('all');
+
+  // Confirmation Modal State
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+    variant: 'danger' | 'primary';
+    isLoading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: async () => { },
+    variant: 'primary',
+    isLoading: false,
+  });
+
+  const closeConfirm = () => setConfirmState(prev => ({ ...prev, isOpen: false }));
 
   // Check permissions
   useEffect(() => {
@@ -106,10 +127,23 @@ export default function MembersPage() {
     customFilter,
   });
 
-  const handleDelete = useCallback(async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
-    await deleteItem(id);
+  const handleDelete = useCallback((id: string, name: string) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Member',
+      description: `Are you sure you want to delete ${name}? This action cannot be undone.`,
+      variant: 'danger',
+      isLoading: false,
+      onConfirm: async () => await deleteItem(id),
+    });
   }, [deleteItem]);
+
+  // Handle actual confirmation click
+  const onConfirmClick = async () => {
+    setConfirmState(prev => ({ ...prev, isLoading: true }));
+    await confirmState.onConfirm();
+    setConfirmState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+  };
 
   // Table Configuration
   const tableConfig = useMemo(() => ({
@@ -191,51 +225,45 @@ export default function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Members</h1>
-          <p className="text-gray-600 mt-1">Manage organization members</p>
-        </div>
-        <Link
-          href="/admin/members/new"
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Member
-        </Link>
-      </div>
-
       <AdminDataTable
         config={tableConfig}
         data={members}
+        createButton={{
+          label: 'Add Member',
+          href: '/admin/members/new',
+        }}
+        header={{
+          title: 'Members',
+          description: 'Manage organization members',
+        }}
         isLoading={loading}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         filters={
-          <div className="flex flex-col md:flex-row gap-4">
-            <select
-              value={filters.status || 'all'}
-              onChange={(e) => setFilter('status', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="alumni">Alumni</option>
-            </select>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <div className="w-full md:w-48">
+              <Select
+                value={filters.status || 'all'}
+                onChange={(val) => setFilter('status', val)}
+                options={[
+                  { value: 'all', label: 'All Status' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: 'Inactive' },
+                  { value: 'alumni', label: 'Alumni' },
+                ]}
+              />
+            </div>
 
-            <select
-              value={batchFilter}
-              onChange={(e) => setBatchFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Batches</option>
-              {batches.map((batch) => (
-                <option key={batch} value={batch}>
-                  Batch {batch}
-                </option>
-              ))}
-            </select>
+            <div className="w-full md:w-48">
+              <Select
+                value={batchFilter}
+                onChange={(val) => setBatchFilter(val)}
+                options={[
+                  { value: 'all', label: 'All Batches' },
+                  ...batches.map((batch) => ({ value: batch, label: `Batch ${batch}` })),
+                ]}
+              />
+            </div>
           </div>
         }
         manualPagination={{
@@ -245,6 +273,37 @@ export default function MembersPage() {
           onPageChange: setCurrentPage,
         }}
       />
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={confirmState.isOpen}
+        onClose={closeConfirm}
+        title={confirmState.title}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">{confirmState.description}</p>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={closeConfirm}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={confirmState.isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirmClick}
+              disabled={confirmState.isLoading}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+                ${confirmState.variant === 'danger'
+                  ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                  : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                }`}
+            >
+              {confirmState.isLoading ? 'Processing...' : 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

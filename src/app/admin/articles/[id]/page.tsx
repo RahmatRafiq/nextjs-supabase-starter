@@ -8,6 +8,8 @@ import { FormTextarea } from '@/shared/components/FormTextarea';
 import { FormSelect } from '@/shared/components/FormSelect';
 import { FormCheckbox } from '@/shared/components/FormCheckbox';
 import { FormActions } from '@/shared/components/FormActions';
+import { FormField } from '@/shared/components/FormField';
+import { CreateableSelect } from '@/shared/components/ui/CreateableSelect';
 import { generateSlug } from '@/lib/utils/slug';
 import { ArticleFormData } from '@/types/forms';
 
@@ -121,7 +123,7 @@ export default function ArticlePage() {
               label="Cover Image URL"
               id="cover_image"
               type="url"
-              value={formData.cover_image}
+              value={formData.cover_image || ''}
               onChange={(value) => updateField('cover_image', value)}
               required
               placeholder="https://example.com/image.jpg"
@@ -131,20 +133,21 @@ export default function ArticlePage() {
           <FormTextarea
             label="Excerpt"
             id="excerpt"
-            value={formData.excerpt}
+            value={formData.excerpt || ''}
             onChange={(value) => updateField('excerpt', value)}
             required
             rows={3}
             placeholder="Brief summary of the article..."
           />
 
-          <FormInput
-            label="Tags"
-            id="tags"
-            value={formData.tags}
-            onChange={(value) => updateField('tags', value)}
-            placeholder="tag1, tag2, tag3 (comma-separated)"
-          />
+
+          <FormField label="Tags" id="tags">
+            <CreateableSelect
+              value={formData.tags ? String(formData.tags).split(',').filter(t => t.trim()) : []}
+              onChange={(tags) => updateField('tags', tags.join(','))}
+              placeholder="Type tag and press Enter"
+            />
+          </FormField>
 
           <FormCheckbox
             label="Featured Article"
@@ -158,7 +161,7 @@ export default function ArticlePage() {
               Content <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
-              value={formData.content}
+              value={formData.content || ''}
               onChange={(value) => updateField('content', value)}
               placeholder="Write your article content..."
               height="500px"

@@ -79,15 +79,22 @@ export default function MemberFormPage() {
         graduated_at: data.graduated_at || null,
         bio: data.bio || null,
         interests: data.interests
-          ? data.interests.split(',').map((i) => i.trim())
+          ? (typeof data.interests === 'string' ? data.interests.split(',') : data.interests).map((i: string) => i.trim())
           : null,
         achievements: data.achievements
-          ? data.achievements.split(',').map((a) => a.trim())
+          ? (typeof data.achievements === 'string' ? data.achievements.split(',') : data.achievements).map((a: string) => a.trim())
           : null,
         social_media: Object.keys(socialMedia).length > 0 ? socialMedia : null,
       };
     },
   });
+
+  const handleNameChange = (value: string) => {
+    setFormData({
+      ...formData,
+      name: value,
+    });
+  };
 
   if (fetching) {
     return (
@@ -115,7 +122,7 @@ export default function MemberFormPage() {
               label="Full Name"
               id="name"
               value={formData.name}
-              onChange={(value) => setFormData({ ...formData, name: value })}
+              onChange={handleNameChange}
               required
             />
 
@@ -141,7 +148,7 @@ export default function MemberFormPage() {
             <FormInput
               label="Phone Number"
               id="phone"
-              value={formData.phone}
+              value={formData.phone || ''}
               onChange={(value) => setFormData({ ...formData, phone: value })}
               placeholder="08123456789"
             />
@@ -171,7 +178,7 @@ export default function MemberFormPage() {
             <FormInput
               label="Division"
               id="division"
-              value={formData.division}
+              value={formData.division || ''}
               onChange={(value) => setFormData({ ...formData, division: value })}
               placeholder="e.g., Internal Affairs"
             />
@@ -179,7 +186,7 @@ export default function MemberFormPage() {
             <FormInput
               label="Position"
               id="position"
-              value={formData.position}
+              value={formData.position || ''}
               onChange={(value) => setFormData({ ...formData, position: value })}
               placeholder="e.g., Coordinator"
             />
@@ -189,7 +196,7 @@ export default function MemberFormPage() {
             label="Photo URL"
             id="photo"
             type="url"
-            value={formData.photo}
+            value={formData.photo || ''}
             onChange={(value) => setFormData({ ...formData, photo: value })}
             placeholder="https://example.com/photo.jpg"
           />
@@ -199,7 +206,7 @@ export default function MemberFormPage() {
               Bio
             </label>
             <RichTextEditor
-              value={formData.bio}
+              value={formData.bio || ''}
               onChange={(value) => setFormData({ ...formData, bio: value })}
               placeholder="Short biography..."
               height="300px"
@@ -209,7 +216,7 @@ export default function MemberFormPage() {
           <FormInput
             label="Interests"
             id="interests"
-            value={formData.interests}
+            value={formData.interests || ''}
             onChange={(value) => setFormData({ ...formData, interests: value })}
             placeholder="Programming, Design, Writing (comma-separated)"
           />
@@ -217,7 +224,7 @@ export default function MemberFormPage() {
           <FormInput
             label="Achievements"
             id="achievements"
-            value={formData.achievements}
+            value={formData.achievements || ''}
             onChange={(value) => setFormData({ ...formData, achievements: value })}
             placeholder="Award 1, Award 2, Award 3 (comma-separated)"
           />
@@ -226,7 +233,7 @@ export default function MemberFormPage() {
             <FormInput
               label="Instagram Username"
               id="social_media_instagram"
-              value={formData.social_media_instagram}
+              value={formData.social_media_instagram || ''}
               onChange={(value) => setFormData({ ...formData, social_media_instagram: value })}
               placeholder="username (without @)"
             />
@@ -235,7 +242,7 @@ export default function MemberFormPage() {
               label="LinkedIn URL"
               id="social_media_linkedin"
               type="url"
-              value={formData.social_media_linkedin}
+              value={formData.social_media_linkedin || ''}
               onChange={(value) => setFormData({ ...formData, social_media_linkedin: value })}
               placeholder="https://linkedin.com/in/username"
             />
@@ -245,7 +252,7 @@ export default function MemberFormPage() {
             label="Twitter URL"
             id="social_media_twitter"
             type="url"
-            value={formData.social_media_twitter}
+            value={formData.social_media_twitter || ''}
             onChange={(value) => setFormData({ ...formData, social_media_twitter: value })}
             placeholder="https://twitter.com/username"
           />

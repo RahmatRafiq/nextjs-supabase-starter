@@ -7,6 +7,8 @@ import { FormInput } from '@/shared/components/FormInput';
 import { FormSelect } from '@/shared/components/FormSelect';
 import { FormCheckbox } from '@/shared/components/FormCheckbox';
 import { FormActions } from '@/shared/components/FormActions';
+import { FormField } from '@/shared/components/FormField';
+import { CreateableSelect } from '@/shared/components/ui/CreateableSelect';
 import { generateSlug } from '@/lib/utils/slug';
 import { EventFormData } from '@/types/forms';
 import { EventLocation, EventOrganizer } from '@/types/event';
@@ -191,24 +193,37 @@ export default function EventFormPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormSelect
-              label="Location Type"
-              id="location_type"
-              value={formData.location_type}
-              onChange={(value) => setFormData({ ...formData, location_type: value })}
-              options={LOCATION_TYPES}
-              required
-            />
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-900 mb-4">Event Location & Access</h3>
+            <div className="grid grid-cols-1 gap-4">
+              <FormSelect
+                label="Location Type"
+                id="location_type"
+                value={formData.location_type}
+                onChange={(value) => setFormData({ ...formData, location_type: value })}
+                options={LOCATION_TYPES}
+                required
+              />
 
-            <FormInput
-              label="Location Address"
-              id="location_address"
-              value={formData.location_address}
-              onChange={(value) => setFormData({ ...formData, location_address: value })}
-              required
-              placeholder="Address or online link"
-            />
+              <FormInput
+                label={formData.location_type === 'online' ? 'Meeting URL' : 'Venue Address'}
+                id="location_address"
+                value={formData.location_address || ''}
+                onChange={(value) => setFormData({ ...formData, location_address: value })}
+                required
+                placeholder={formData.location_type === 'online' ? 'https://zoom.us/...' : 'Full address of the venue'}
+              />
+
+              {formData.location_type !== 'online' && (
+                <FormInput
+                  label="Google Maps URL"
+                  id="location_maps_url"
+                  value={formData.location_maps_url || ''}
+                  onChange={(value) => setFormData({ ...formData, location_maps_url: value })}
+                  placeholder="https://maps.google.com/..."
+                />
+              )}
+            </div>
           </div>
 
           <FormInput
@@ -223,7 +238,7 @@ export default function EventFormPage() {
             label="Cover Image URL"
             id="cover_image"
             type="url"
-            value={formData.cover_image}
+            value={formData.cover_image || ''}
             onChange={(value) => setFormData({ ...formData, cover_image: value })}
             required
             placeholder="https://example.com/image.jpg"
@@ -258,7 +273,7 @@ export default function EventFormPage() {
               label="Registration URL"
               id="registration_url"
               type="url"
-              value={formData.registration_url}
+              value={formData.registration_url || ''}
               onChange={(value) => setFormData({ ...formData, registration_url: value })}
               placeholder="https://forms.gle/..."
             />
@@ -267,7 +282,7 @@ export default function EventFormPage() {
               label="Registration Deadline"
               id="registration_deadline"
               type="datetime-local"
-              value={formData.registration_deadline}
+              value={formData.registration_deadline || ''}
               onChange={(value) => setFormData({ ...formData, registration_deadline: value })}
             />
           </div>
@@ -277,18 +292,18 @@ export default function EventFormPage() {
               label="Max Participants"
               id="max_participants"
               type="number"
-              value={formData.max_participants}
+              value={formData.max_participants || ''}
               onChange={(value) => setFormData({ ...formData, max_participants: value })}
               placeholder="Leave empty for unlimited"
             />
 
-            <FormInput
-              label="Tags"
-              id="tags"
-              value={formData.tags}
-              onChange={(value) => setFormData({ ...formData, tags: value })}
-              placeholder="tag1, tag2, tag3"
-            />
+            <FormField label="Tags" id="tags">
+              <CreateableSelect
+                value={formData.tags ? String(formData.tags).split(',').filter(t => t.trim()) : []}
+                onChange={(tags) => setFormData({ ...formData, tags: tags.join(',') })}
+                placeholder="Type tag and press Enter"
+              />
+            </FormField>
           </div>
 
           <FormCheckbox

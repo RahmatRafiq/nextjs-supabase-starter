@@ -1,9 +1,11 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Edit, Trash2, Eye } from 'lucide-react';
+import { Modal } from '@/shared/components/ui/Modal';
+import { Select } from '@/shared/components/ui/Select';
 import Link from 'next/link';
 import { Event } from '@/types/event';
 import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
@@ -27,6 +29,25 @@ interface EventListItem {
 
 export default function EventsPage() {
   const { user, profile, hasPermission, canEditOwnContent } = useAuth();
+
+  // Confirmation Modal State
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+    variant: 'danger' | 'primary';
+    isLoading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: async () => { },
+    variant: 'primary',
+    isLoading: false,
+  });
+
+  const closeConfirm = () => setConfirmState(prev => ({ ...prev, isOpen: false }));
 
   // Memoize searchColumns to prevent infinite re-renders
   const searchColumns = useMemo(() => ['title', 'organizer->>name'], []);
@@ -55,10 +76,23 @@ export default function EventsPage() {
     searchColumns,
   });
 
-  const handleDelete = useCallback(async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
-    await deleteItem(id);
+  const handleDelete = useCallback((id: string, title: string) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Event',
+      description: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+      variant: 'danger',
+      isLoading: false,
+      onConfirm: async () => await deleteItem(id),
+    });
   }, [deleteItem]);
+
+  // Handle actual confirmation click
+  const onConfirmClick = async () => {
+    setConfirmState(prev => ({ ...prev, isLoading: true }));
+    await confirmState.onConfirm();
+    setConfirmState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+  };
 
   const canEditEvent = useCallback((event: EventListItem): boolean => {
     if (hasPermission(['super_admin', 'admin'])) return true;
@@ -167,53 +201,51 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Events</h1>
-          <p className="text-gray-600 mt-1">Manage events and activities</p>
-        </div>
-        <Link
-          href="/admin/events/new"
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Event
-        </Link>
-      </div>
-
       <AdminDataTable
         config={tableConfig}
         data={events}
+        createButton={{
+          label: 'Add Event',
+          href: '/admin/events/new',
+        }}
+        header={{
+          title: 'Events',
+          description: 'Manage events and activities',
+        }}
         isLoading={loading}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         filters={
-          <div className="flex flex-col md:flex-row gap-4">
-            <select
-              value={filters.status || 'all'}
-              onChange={(e) => setFilter('status', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <div className="w-full md:w-48">
+              <Select
+                value={filters.status || 'all'}
+                onChange={(val) => setFilter('status', val)}
+                options={[
+                  { value: 'all', label: 'All Status' },
+                  { value: 'upcoming', label: 'Upcoming' },
+                  { value: 'ongoing', label: 'Ongoing' },
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'cancelled', label: 'Cancelled' },
+                ]}
+              />
+            </div>
 
-            <select
-              value={filters.category || 'all'}
-              onChange={(e) => setFilter('category', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Categories</option>
-              <option value="seminar">Seminar</option>
-              <option value="workshop">Workshop</option>
-              <option value="community-service">Community Service</option>
-              <option value="competition">Competition</option>
-              <option value="training">Training</option>
-              <option value="other">Other</option>
-            </select>
+            <div className="w-full md:w-48">
+              <Select
+                value={filters.category || 'all'}
+                onChange={(val) => setFilter('category', val)}
+                options={[
+                  { value: 'all', label: 'All Categories' },
+                  { value: 'seminar', label: 'Seminar' },
+                  { value: 'workshop', label: 'Workshop' },
+                  { value: 'community-service', label: 'Community Service' },
+                  { value: 'competition', label: 'Competition' },
+                  { value: 'training', label: 'Training' },
+                  { value: 'other', label: 'Other' },
+                ]}
+              />
+            </div>
           </div>
         }
         manualPagination={{
@@ -223,6 +255,37 @@ export default function EventsPage() {
           onPageChange: setCurrentPage,
         }}
       />
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={confirmState.isOpen}
+        onClose={closeConfirm}
+        title={confirmState.title}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">{confirmState.description}</p>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={closeConfirm}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={confirmState.isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirmClick}
+              disabled={confirmState.isLoading}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+                ${confirmState.variant === 'danger'
+                  ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                  : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                }`}
+            >
+              {confirmState.isLoading ? 'Processing...' : 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

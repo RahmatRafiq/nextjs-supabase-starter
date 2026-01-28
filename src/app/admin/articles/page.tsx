@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { Modal } from '@/shared/components/ui/Modal';
+import { Select } from '@/shared/components/ui/Select';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
@@ -26,6 +28,25 @@ interface ArticleListItem {
 
 export default function ArticlesPage() {
   const { user, profile, hasPermission, canEditOwnContent, canPublishArticles } = useAuth();
+
+  // Confirmation Modal State
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+    variant: 'danger' | 'primary';
+    isLoading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: async () => { },
+    variant: 'primary',
+    isLoading: false,
+  });
+
+  const closeConfirm = () => setConfirmState(prev => ({ ...prev, isOpen: false }));
 
   // Memoize searchColumns to prevent infinite re-renders
   const searchColumns = useMemo(() => ['title', 'author->>name'], []);
@@ -53,18 +74,10 @@ export default function ArticlesPage() {
     searchColumns,
   });
 
-  // Publish article
-  const handlePublish = useCallback(async (id: string, title: string) => {
-    if (!canPublishArticles()) {
-      toast.error('You do not have permission to publish articles');
-      return;
-    }
-
-    if (!confirm(`Publish "${title}"?`)) return;
-
-    const now = new Date().toISOString();
-
+  // Action Logic
+  const executePublish = async (id: string) => {
     try {
+      const now = new Date().toISOString();
       const { error } = await supabase
         .from('articles')
         .update({ status: 'published' as const, published_at: now } as unknown as never)
@@ -78,17 +91,9 @@ export default function ArticlesPage() {
       const message = error instanceof Error ? error.message : 'Failed to publish article';
       toast.error(message);
     }
-  }, [canPublishArticles, refetch]);
+  };
 
-  // Unpublish article
-  const handleUnpublish = useCallback(async (id: string, title: string) => {
-    if (!canPublishArticles()) {
-      toast.error('You do not have permission to unpublish articles');
-      return;
-    }
-
-    if (!confirm(`Unpublish "${title}"? It will be set to draft.`)) return;
-
+  const executeUnpublish = async (id: string) => {
     try {
       const { error } = await supabase
         .from('articles')
@@ -103,12 +108,9 @@ export default function ArticlesPage() {
       const message = error instanceof Error ? error.message : 'Failed to unpublish article';
       toast.error(message);
     }
-  }, [canPublishArticles, refetch]);
+  };
 
-  // Delete article
-  const handleDelete = useCallback(async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
-
+  const executeDelete = async (id: string) => {
     try {
       const { error } = await supabase.from('articles').delete().eq('id', id);
 
@@ -120,7 +122,58 @@ export default function ArticlesPage() {
       const message = error instanceof Error ? error.message : 'Failed to delete article';
       toast.error(message);
     }
+  };
+
+  // Handlers triggering Modal
+  const handlePublish = useCallback((id: string, title: string) => {
+    if (!canPublishArticles()) {
+      toast.error('You do not have permission to publish articles');
+      return;
+    }
+
+    setConfirmState({
+      isOpen: true,
+      title: 'Publish Article',
+      description: `Are you sure you want to publish "${title}"?`,
+      variant: 'primary',
+      isLoading: false,
+      onConfirm: async () => await executePublish(id),
+    });
+  }, [canPublishArticles, refetch]);
+
+  const handleUnpublish = useCallback((id: string, title: string) => {
+    if (!canPublishArticles()) {
+      toast.error('You do not have permission to unpublish articles');
+      return;
+    }
+
+    setConfirmState({
+      isOpen: true,
+      title: 'Unpublish Article',
+      description: `Unpublish "${title}"? It will be set to draft.`,
+      variant: 'primary',
+      isLoading: false,
+      onConfirm: async () => await executeUnpublish(id),
+    });
+  }, [canPublishArticles, refetch]);
+
+  const handleDelete = useCallback((id: string, title: string) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Article',
+      description: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+      variant: 'danger',
+      isLoading: false,
+      onConfirm: async () => await executeDelete(id),
+    });
   }, [refetch]);
+
+  // Handle actual confirmation click
+  const onConfirmClick = async () => {
+    setConfirmState(prev => ({ ...prev, isLoading: true }));
+    await confirmState.onConfirm();
+    setConfirmState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+  };
 
   // Permission checks
   const canEditArticle = useCallback((article: ArticleListItem): boolean => {
@@ -167,31 +220,35 @@ export default function ArticlesPage() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         filters={
-          <div className="flex flex-col md:flex-row gap-4">
-            <select
-              value={filters.status ?? 'all'}
-              onChange={(e) => setFilter('status', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="pending">Pending</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
-            </select>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <div className="w-full md:w-48">
+              <Select
+                value={filters.status ?? 'all'}
+                onChange={(val) => setFilter('status', val)}
+                options={[
+                  { value: 'all', label: 'All Status' },
+                  { value: 'draft', label: 'Draft' },
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'published', label: 'Published' },
+                  { value: 'archived', label: 'Archived' },
+                ]}
+              />
+            </div>
 
-            <select
-              value={filters.category ?? 'all'}
-              onChange={(e) => setFilter('category', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">All Categories</option>
-              <option value="post">Post</option>
-              <option value="blog">Blog</option>
-              <option value="opinion">Opinion</option>
-              <option value="publication">Publication</option>
-              <option value="info">Info</option>
-            </select>
+            <div className="w-full md:w-48">
+              <Select
+                value={filters.category ?? 'all'}
+                onChange={(val) => setFilter('category', val)}
+                options={[
+                  { value: 'all', label: 'All Categories' },
+                  { value: 'post', label: 'Post' },
+                  { value: 'blog', label: 'Blog' },
+                  { value: 'opinion', label: 'Opinion' },
+                  { value: 'publication', label: 'Publication' },
+                  { value: 'info', label: 'Info' },
+                ]}
+              />
+            </div>
           </div>
         }
         manualPagination={{
@@ -201,6 +258,37 @@ export default function ArticlesPage() {
           onPageChange: setCurrentPage,
         }}
       />
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={confirmState.isOpen}
+        onClose={closeConfirm}
+        title={confirmState.title}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">{confirmState.description}</p>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={closeConfirm}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={confirmState.isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirmClick}
+              disabled={confirmState.isLoading}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+                ${confirmState.variant === 'danger'
+                  ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                  : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                }`}
+            >
+              {confirmState.isLoading ? 'Processing...' : 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

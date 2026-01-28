@@ -10,22 +10,6 @@ export async function getProfileService(userId: string) {
             .single();
 
         if (error) {
-            // If profile not found (PGRST116), wait and retry once (trigger delay)
-            if (error.code === 'PGRST116') {
-                // Wait 1 second
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                const { data: retryData, error: retryError } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
-                if (!retryError && retryData) {
-                    return { data: retryData as Profile, error: null };
-                }
-                return { data: null, error: error };
-            }
             return { data: null, error };
         }
 

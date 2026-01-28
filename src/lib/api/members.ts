@@ -64,6 +64,16 @@ export interface Member {
 }
 
 /**
+ * Check if photo URL is valid
+ */
+function isValidPhotoUrl(url: string | null): boolean {
+  if (!url) return false;
+  if (url.includes('w3.org')) return false;
+  if (url.trim() === '') return false;
+  return true;
+}
+
+/**
  * Transform raw database member to frontend format
  */
 function transformMember(raw: MemberRaw): Member {
@@ -73,7 +83,7 @@ function transformMember(raw: MemberRaw): Member {
     nim: raw.nim,
     email: raw.email,
     phone: raw.phone ?? undefined,
-    photo: raw.photo ?? undefined,
+    photo: isValidPhotoUrl(raw.photo) ? raw.photo! : undefined,
     batch: raw.batch,
     status: raw.status,
     division: raw.division ?? undefined,

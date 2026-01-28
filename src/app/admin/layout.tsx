@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useAuth } from '@/lib/auth/AuthContext';
+import { AuthProvider, useAuth } from '@/lib/auth/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+
 import {
   LayoutDashboard,
   Users,
@@ -47,7 +48,7 @@ const navigation: NavItem[] = [
   { name: 'Settings', href: '/admin/settings', icon: Settings, roles: ['super_admin', 'admin'] },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, profile, signOut, loading, error, refreshProfile } = useAuth();
   const router = useRouter();
 
@@ -249,5 +250,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AuthProvider>
   );
 }

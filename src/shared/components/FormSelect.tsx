@@ -1,4 +1,5 @@
 import { FormField } from './FormField';
+import { Select } from '@/shared/components/ui/Select';
 
 interface SelectOption {
   value: string;
@@ -26,19 +27,13 @@ export function FormSelect({
 }: FormSelectProps) {
   return (
     <FormField label={label} id={id} required={required} error={error}>
-      <select
-        id={id}
+      <Select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        onChange={onChange}
+        options={options}
+        placeholder={`Select ${label.toLowerCase()}...`}
+        className="w-full"
+      />
     </FormField>
   );
 }

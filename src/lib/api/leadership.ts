@@ -50,13 +50,25 @@ export interface LeadershipMember {
   };
   email?: string;
   phone?: string;
-  photo: string;
+  photo: string | null;
   bio?: string;
   socialMedia?: {
     instagram?: string;
     linkedin?: string;
   };
   order: number;
+}
+
+/**
+ * Check if photo URL is valid
+ */
+function isValidPhotoUrl(url: string | null): boolean {
+  if (!url) return false;
+  if (url.includes('w3.org')) return false;
+  if (url.trim() === '') return false;
+  // Detect placeholder data URL SVG
+  if (url.startsWith('data:image/svg+xml') && url.includes('fill="%23f3f4f6"')) return false;
+  return true;
 }
 
 /**
@@ -77,7 +89,7 @@ function transformLeadership(raw: LeadershipRaw): LeadershipMember {
     period,
     email: raw.email ?? undefined,
     phone: raw.phone ?? undefined,
-    photo: raw.photo ?? '/images/default-avatar.png',
+    photo: isValidPhotoUrl(raw.photo) ? raw.photo : null,
     bio: raw.bio ?? undefined,
     socialMedia: raw.social_media ? {
       instagram: raw.social_media.instagram,

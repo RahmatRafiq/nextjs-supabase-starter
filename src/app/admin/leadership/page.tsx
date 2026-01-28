@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useAdminTable } from '@/shared/hooks/useAdminTable';
-import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Edit, Trash2, Calendar } from 'lucide-react';
+import { Modal } from '@/shared/components/ui/Modal';
 import Link from 'next/link';
 import { Leadership } from '@/types/leadership';
 import { ITEMS_PER_PAGE } from '@/lib/constants/admin';
@@ -29,6 +30,25 @@ const DIVISION_LABELS: Record<string, string> = {
 };
 
 export default function LeadershipPage() {
+  // Confirmation Modal State
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+    variant: 'danger' | 'primary';
+    isLoading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: async () => { },
+    variant: 'primary',
+    isLoading: false,
+  });
+
+  const closeConfirm = () => setConfirmState(prev => ({ ...prev, isOpen: false }));
+
   // Memoize searchColumns to prevent infinite re-renders
   const searchColumns = useMemo(() => ['name', 'position', 'email'], []);
 
@@ -51,10 +71,23 @@ export default function LeadershipPage() {
     searchColumns,
   });
 
-  const handleDelete = useCallback(async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
-    await deleteItem(id);
+  const handleDelete = useCallback((id: string, name: string) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Leader',
+      description: `Are you sure you want to delete ${name}? This action cannot be undone.`,
+      variant: 'danger',
+      isLoading: false,
+      onConfirm: async () => await deleteItem(id),
+    });
   }, [deleteItem]);
+
+  // Handle actual confirmation click
+  const onConfirmClick = async () => {
+    setConfirmState(prev => ({ ...prev, isLoading: true }));
+    await confirmState.onConfirm();
+    setConfirmState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+  };
 
   // Table Configuration
   const tableConfig = useMemo(() => ({
@@ -74,11 +107,17 @@ export default function LeadershipPage() {
         responsivePriority: 1,
         render: (_: unknown, __: string, row: any) => (
           <div className="flex items-center gap-3">
-            <img
-              src={row.photo}
-              alt={row.name}
-              className="w-10 h-10 rounded-full object-cover"
-            />
+            {row.photo ? (
+              <img
+                src={row.photo}
+                alt={row.name}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-green-100 text-green-800 flex items-center justify-center font-semibold text-sm">
+                {row.name.charAt(0)}
+              </div>
+            )}
             <div>
               <div className="font-medium text-gray-900">{row.name}</div>
               {row.email && (
@@ -142,33 +181,19 @@ export default function LeadershipPage() {
     },
   }), [handleDelete]);
 
-  if (loading) {
-    // We let AdminDataTable handle loading state if we want, but if we want full page replacement during initial load:
-    // Actually, AdminDataTable rendering Skeleton is better.
-    // So removing this block if AdminDataTable handles it nicely.
-    // However, the surrounding layout (Add button etc) is nice to see.
-    // So I will remove this block and let AdminDataTable show skeleton.
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leadership</h1>
-          <p className="text-gray-600 mt-1">Manage organization leadership</p>
-        </div>
-        <Link
-          href="/admin/leadership/new"
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Leader
-        </Link>
-      </div>
-
       <AdminDataTable
         config={tableConfig}
         data={leaders}
+        createButton={{
+          label: 'Add Leader',
+          href: '/admin/leadership/new',
+        }}
+        header={{
+          title: 'Leadership',
+          description: 'Manage organization leadership',
+        }}
         isLoading={loading}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -179,6 +204,37 @@ export default function LeadershipPage() {
           onPageChange: setCurrentPage,
         }}
       />
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={confirmState.isOpen}
+        onClose={closeConfirm}
+        title={confirmState.title}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">{confirmState.description}</p>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={closeConfirm}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={confirmState.isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirmClick}
+              disabled={confirmState.isLoading}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+                ${confirmState.variant === 'danger'
+                  ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                  : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                }`}
+            >
+              {confirmState.isLoading ? 'Processing...' : 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

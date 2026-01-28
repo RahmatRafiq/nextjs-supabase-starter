@@ -1,6 +1,5 @@
 'use client';
 
-
 import { createContext, useContext, useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
@@ -38,149 +37,80 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const mountedRef = useRef(false);
 
-  const isFetchingRef = useRef(false);
-  const pendingFetchRef = useRef<string | null>(null);
-  const initializedRef = useRef(false);
-  const hasSetLoadingFalseRef = useRef(false);
-
-  const fetchProfile = useCallback(async (userId: string, silent = false): Promise<void> => {
-    if (isFetchingRef.current) {
-      pendingFetchRef.current = userId;
-      return;
-    }
-
-    if (silent && profile?.id === userId) return;
-
-    isFetchingRef.current = true;
-
+  // Prevent multiple fetch calls
+  const fetchProfile = useCallback(async (userId: string) => {
     try {
       const { data, error } = await getProfileService(userId);
-
       if (error) {
-        const err = error as { code?: string };
-        if (err.code === 'PGRST116' && !profile) {
-          setProfile(null);
+        if (mountedRef.current) {
           setError(error as Error);
-        } else {
-          if (!profile) setError(error as Error);
+          // Don't nullify profile on temporary errors if we had one? 
+          // But strict correctness says if we fetched and got nothing, it's null.
+          setProfile(null);
         }
-      } else if (data) {
-        setProfile(data);
+      } else {
+        if (mountedRef.current) {
+          setProfile(prev => {
+            // Simple equality check to prevent re-renders if data is same
+            if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
+            return data;
+          });
+          setError(null);
+        }
       }
     } catch (err) {
       console.error('[AuthContext] Unexpected error:', err);
-    } finally {
-      isFetchingRef.current = false;
-
-      if (!hasSetLoadingFalseRef.current) {
-        setLoading(false);
-        hasSetLoadingFalseRef.current = true;
-        initializedRef.current = true;
-      }
-
-      if (pendingFetchRef.current) {
-        const pendingUserId = pendingFetchRef.current;
-        pendingFetchRef.current = null;
-        setTimeout(() => fetchProfile(pendingUserId, true), 0);
-      }
+      if (mountedRef.current) setError(err as Error);
     }
-  }, [profile]);
+  }, []);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
-    const safetyTimeout = setTimeout(() => {
-      if (mounted && !hasSetLoadingFalseRef.current) {
-        setLoading(false);
-        hasSetLoadingFalseRef.current = true;
-        initializedRef.current = true;
-      }
-    }, 10000);
+    async function handleAuthChange(session: Session | null) {
+      if (!mountedRef.current) return;
 
-    async function initAuth(): Promise<void> {
-      if (initializedRef.current) return;
+      // Update session/user with stability checks
+      setSession(prev => {
+        if (prev?.access_token === session?.access_token) return prev;
+        return session;
+      });
 
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('[AuthContext] Error getting session:', error);
-          }
-          if (mounted) {
-            setLoading(false);
-            initializedRef.current = true;
-          }
-          return;
-        }
-
-        if (!mounted) {
-          return;
-        }
-
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setLoading(false);
-          initializedRef.current = true;
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('[AuthContext] Auth initialization error:', error);
-        }
-        if (mounted) {
-          setLoading(false);
-          initializedRef.current = true;
-        }
-      }
-    }
-
-    initAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[AuthContext]', event);
-      }
-
-      if (!initializedRef.current) return;
-
-      setSession(session);
-      setUser(session?.user ?? null);
+      setUser(prev => {
+        if (prev?.id === session?.user?.id && prev?.updated_at === session?.user?.updated_at) return prev;
+        return session?.user ?? null;
+      });
 
       if (session?.user) {
-        if (event === 'SIGNED_IN') {
-          await fetchProfile(session.user.id);
-        } else if (event === 'TOKEN_REFRESHED') {
-          // No-op
-        } else if (event === 'SIGNED_OUT') {
-          setProfile(null);
-          if (mounted) {
-            setLoading(false);
-            initializedRef.current = false;
-          }
-        }
+        // Only fetch profile if we don't have it or if user changed
+        // We can check local profile state vs session user
+        await fetchProfile(session.user.id);
       } else {
-        if (event === 'SIGNED_OUT') {
-          setProfile(null);
-          if (mounted) {
-            setLoading(false);
-            initializedRef.current = false;
-          }
-        }
+        setProfile(null);
+      }
+
+      if (mountedRef.current) setLoading(false);
+    }
+
+    // Initialize
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('[AuthContext] Session error:', error);
+        if (mountedRef.current) setLoading(false);
+      } else {
+        handleAuthChange(session);
       }
     });
 
+    // Listen
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleAuthChange(session);
+    });
+
     return () => {
-      mounted = false;
-      clearTimeout(safetyTimeout);
+      mountedRef.current = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
@@ -192,12 +122,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
   const signOut = useCallback(async (): Promise<void> => {
     await signOutService();
-
-    setUser(null);
-    setProfile(null);
-    setSession(null);
-    isFetchingRef.current = false;
-    initializedRef.current = false;
+    if (mountedRef.current) {
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+    }
   }, []);
 
   const hasPermission = useCallback((requiredRoles: UserRole[]) => checkPermission(profile, requiredRoles), [profile]);
@@ -209,7 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
   const refreshProfile = useCallback(async (): Promise<void> => {
     if (user) {
+      setLoading(true);
       await fetchProfile(user.id);
+      if (mountedRef.current) setLoading(false);
     }
   }, [user, fetchProfile]);
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { User } from 'lucide-react';
 import { getActiveLeadership, type LeadershipMember } from '@/lib/api/leadership';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
@@ -122,15 +123,26 @@ export default function LeadershipPage() {
                 className="group relative"
               >
                 {/* Free-standing Image - No Container/Card Styles */}
-                <div className="relative aspect-[3/4] overflow-hidden mb-6 grayscale group-hover:grayscale-0 transition-all duration-700 ease-out">
-                  <Image
-                    src={member.photo}
-                    alt={member.name}
-                    fill
-                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                  />
-                  {/* Subtle Gradient Overlay for Text Readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative aspect-[3/4] overflow-hidden mb-6 grayscale group-hover:grayscale-0 transition-all duration-700 ease-out bg-gradient-to-br from-primary-900/30 to-gray-900/30 flex items-center justify-center">
+                  {member.photo ? (
+                    <>
+                      <Image
+                        src={member.photo}
+                        alt={member.name}
+                        fill
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                      />
+                      {/* Subtle Gradient Overlay for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </>
+                  ) : (
+                    <motion.div
+                      whileHover={{ rotate: 360, scale: 1.2 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <User className="w-24 h-24 text-primary-300" />
+                    </motion.div>
+                  )}
                 </div>
 
                 {/* Typography - Minimal & Clean */}
@@ -180,13 +192,22 @@ export default function LeadershipPage() {
                     transition={{ delay: idx * 0.05 }}
                   >
                     {/* Circle Avatar - Transitions to Square on Hover */}
-                    <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-full group-hover:rounded-none transition-all duration-500 bg-gray-100">
-                      <Image
-                        src={member.photo}
-                        alt={member.name}
-                        fill
-                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                      />
+                    <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-full group-hover:rounded-none transition-all duration-500 bg-gradient-to-br from-primary-100/50 to-gray-100/50 flex items-center justify-center">
+                      {member.photo ? (
+                        <Image
+                          src={member.photo}
+                          alt={member.name}
+                          fill
+                          className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                        />
+                      ) : (
+                        <motion.div
+                          whileHover={{ rotate: 360, scale: 1.2 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <User className="w-10 h-10 text-primary-300" />
+                        </motion.div>
+                      )}
                     </div>
 
                     {/* Text Info */}

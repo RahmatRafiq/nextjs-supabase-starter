@@ -3,7 +3,7 @@ import { Plus_Jakarta_Sans, Poppins } from 'next/font/google';
 import './globals.css';
 import { SITE_CONFIG } from '@/config/site.config';
 import { Toaster } from 'sonner';
-import { AuthProvider } from '@/lib/auth/AuthContext';
+
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -82,10 +82,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body className={`${plusJakarta.variable} ${poppins.variable} font-sans antialiased`}>
-        <AuthProvider>
-          {children}
-          <Toaster position="top-right" richColors />
-        </AuthProvider>
+        {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
