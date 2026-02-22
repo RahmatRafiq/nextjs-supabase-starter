@@ -21,7 +21,7 @@ interface EventListItem {
   status: Event['status'];
   start_date: string;
   end_date: string;
-  creator_id: string;
+  author_id: string;
   organizer: {
     name: string;
   };
@@ -50,6 +50,7 @@ export default function EventsPage() {
   const closeConfirm = () => setConfirmState(prev => ({ ...prev, isOpen: false }));
 
   // Memoize searchColumns to prevent infinite re-renders
+  // Note: organizer->>name requires JSONB column support
   const searchColumns = useMemo(() => ['title', 'organizer->>name'], []);
 
   // All common CRUD logic handled by hook
@@ -67,12 +68,12 @@ export default function EventsPage() {
     deleteItem,
   } = useAdminTable<EventListItem>({
     tableName: 'events',
-    selectColumns: 'id, title, slug, category, status, start_date, end_date, creator_id, organizer',
+    selectColumns: 'id, title, slug, category, status, start_date, end_date, author_id, organizer',
     sortColumn: 'start_date',
     sortAscending: false,
     itemsPerPage: ITEMS_PER_PAGE,
     filterByAuthor: true,
-    authorColumn: 'creator_id',
+    authorColumn: 'author_id',
     searchColumns,
   });
 
@@ -97,7 +98,7 @@ export default function EventsPage() {
   const canEditEvent = useCallback((event: EventListItem): boolean => {
     if (hasPermission(['super_admin', 'admin'])) return true;
     if (profile?.role === 'kontributor' && user) {
-      return canEditOwnContent(event.creator_id);
+      return canEditOwnContent(event.author_id);
     }
     return false;
   }, [hasPermission, profile?.role, user, canEditOwnContent]);
@@ -105,7 +106,7 @@ export default function EventsPage() {
   const canDeleteEvent = useCallback((event: EventListItem): boolean => {
     if (hasPermission(['super_admin', 'admin'])) return true;
     if (profile?.role === 'kontributor' && user) {
-      return canEditOwnContent(event.creator_id);
+      return canEditOwnContent(event.author_id);
     }
     return false;
   }, [hasPermission, profile?.role, user, canEditOwnContent]);
@@ -119,7 +120,7 @@ export default function EventsPage() {
         title: 'Title',
         sortable: true,
         responsivePriority: 1,
-        render: (_: unknown, __: string, row: any) => (
+        render: (_: unknown, __: string, row: EventListItem) => (
           <div>
             <div className="font-medium text-gray-900">{row.title}</div>
             <div className="text-sm text-gray-500">{row.slug}</div>
@@ -159,7 +160,7 @@ export default function EventsPage() {
         title: 'Actions',
         sortable: false,
         className: 'text-right',
-        render: (id: unknown, _: string, row: any) => (
+        render: (id: unknown, _: string, row: EventListItem) => (
           <div className="flex items-center justify-end gap-2">
             <Link
               href={`/events/${row.slug}`}
@@ -170,7 +171,7 @@ export default function EventsPage() {
               <Eye className="w-4 h-4" />
             </Link>
 
-            {canEditEvent(row as EventListItem) && (
+            {canEditEvent(row) && (
               <Link
                 href={`/admin/events/${id}`}
                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -180,7 +181,7 @@ export default function EventsPage() {
               </Link>
             )}
 
-            {canDeleteEvent(row as EventListItem) && (
+            {canDeleteEvent(row) && (
               <button
                 onClick={() => handleDelete(id as string, row.title)}
                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"

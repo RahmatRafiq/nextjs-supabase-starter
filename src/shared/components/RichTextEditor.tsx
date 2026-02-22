@@ -59,17 +59,6 @@ export function RichTextEditor({
           levels: [1, 2, 3],
         },
       }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-primary-600 no-underline hover:underline',
-        },
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: 'rounded-lg shadow-md max-w-full',
-        },
-      }),
       Placeholder.configure({
         placeholder,
       }),
@@ -94,8 +83,19 @@ export function RichTextEditor({
         html: true,
         transformPastedText: true,
         transformCopiedText: false,
-        linkify: true,
+        linkify: false,
         breaks: true,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-primary-600 no-underline hover:underline',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'rounded-lg shadow-md max-w-full',
+        },
       }),
     ],
     content: value,

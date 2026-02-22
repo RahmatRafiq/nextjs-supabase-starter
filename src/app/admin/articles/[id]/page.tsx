@@ -170,7 +170,13 @@ export default function ArticlePage() {
 
           <FormField label="Tags" id="tags">
             <CreateableSelect
-              value={formData.tags ? String(formData.tags).split(',').filter(t => t.trim()) : []}
+              value={
+                Array.isArray(formData.tags)
+                  ? formData.tags
+                  : formData.tags
+                    ? String(formData.tags).split(',').filter(t => t.trim())
+                    : []
+              }
               onChange={(tags) => updateField('tags', tags.join(','))}
               placeholder="Type tag and press Enter"
             />

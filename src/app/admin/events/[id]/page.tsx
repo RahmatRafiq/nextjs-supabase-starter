@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useAdminForm } from '@/shared/hooks/useAdminForm';
 import { RichTextEditor } from '@/shared/components/RichTextEditor';
 import { FormInput } from '@/shared/components/FormInput';
@@ -35,6 +36,19 @@ const LOCATION_TYPES = [
   { value: 'online', label: 'Online' },
   { value: 'hybrid', label: 'Hybrid' },
 ];
+
+// Convert ISO datetime to datetime-local format (yyyy-MM-ddThh:mm)
+function toDatetimeLocal(isoString: string | null | undefined): string {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
 export default function EventFormPage() {
   const params = useParams();
@@ -100,12 +114,31 @@ export default function EventFormPage() {
           ? new Date(data.registration_deadline).toISOString()
           : null,
         max_participants: data.max_participants ? parseInt(data.max_participants) : null,
-        tags: data.tags ? data.tags.split(',').map((t) => t.trim()) : null,
+        tags: Array.isArray(data.tags)
+          ? data.tags
+          : data.tags
+            ? String(data.tags).split(',').map((t) => t.trim())
+            : null,
         featured: data.featured,
         current_participants: 0,
       };
     },
   });
+
+  // Convert datetime fields when data is loaded from database
+  useEffect(() => {
+    if (!fetching && !isCreateMode && formData.start_date) {
+      // Check if dates need conversion (they're in ISO format from DB)
+      if (formData.start_date.includes('T') && formData.start_date.length > 16) {
+        setFormData((prev) => ({
+          ...prev,
+          start_date: toDatetimeLocal(prev.start_date),
+          end_date: toDatetimeLocal(prev.end_date),
+          registration_deadline: toDatetimeLocal(prev.registration_deadline),
+        }));
+      }
+    }
+  }, [fetching, isCreateMode, formData.start_date]);
 
   function handleTitleChange(value: string) {
     setFormData({
@@ -299,7 +332,13 @@ export default function EventFormPage() {
 
             <FormField label="Tags" id="tags">
               <CreateableSelect
-                value={formData.tags ? String(formData.tags).split(',').filter(t => t.trim()) : []}
+                value={
+                  Array.isArray(formData.tags)
+                    ? formData.tags
+                    : formData.tags
+                      ? String(formData.tags).split(',').filter(t => t.trim())
+                      : []
+                }
                 onChange={(tags) => setFormData({ ...formData, tags: tags.join(',') })}
                 placeholder="Type tag and press Enter"
               />

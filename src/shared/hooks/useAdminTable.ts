@@ -142,7 +142,13 @@ export function useAdminTable<T extends { id: string }>(
       setTotalCount(count || 0);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
-      toast.error(`Gagal memuat data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'object' && error !== null && 'message' in error
+          ? String(error.message)
+          : JSON.stringify(error) || 'Unknown error';
+      toast.error(`Gagal memuat data: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
